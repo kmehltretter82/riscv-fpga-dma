@@ -1,0 +1,56 @@
+{
+  "adopted_at": "2026-10-11T12:52:57.241658Z",
+  "adopter_sha256": "ee91f5bfae4605c6ecf8a09db8781242296e5fe9d380e953ef9d05cee4f0099c",
+  "finished_at": null,
+  "manifest": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/manifest.json",
+  "manifest_sha256": "d6c691242d6e983a8ce9100094e9f3b0c7c0b795e90fb5ca719868869c627bf2",
+  "provenance": "completed direct run; preflight captured at adoption",
+  "results": [
+    {
+      "adopted_at": "2026-10-11T12:52:57.241428Z",
+      "duration_seconds": null,
+      "finished_at": null,
+      "gates": [
+        {
+          "actual": 1,
+          "allowed": [
+            1
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "timeout after 100 cycles jobs=0/0"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+        }
+      ],
+      "interrupted": false,
+      "phase": "cache-coherent-bound",
+      "process_log": "process.log",
+      "provenance": "completed direct run; preflight captured at adoption",
+      "returncode": 1,
+      "started_at": null,
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "run_id": "20261011T125255Z-2-11015ca6",
+  "runner_sha256": "bddb9770f1640b22bec7d0580e496906a2f4c44affd9cb878bd57cb2933e4331",
+  "schema_version": 1,
+  "selected": [
+    "cache-coherent-bound"
+  ],
+  "started_at": null,
+  "status": "passed",
+  "verifier_sha256": "79480bdaef92e258fb711e67096becc5f74266c2f3cda7cf10a38cc1cd19e4f0"
+}

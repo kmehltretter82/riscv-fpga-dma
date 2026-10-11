@@ -1,0 +1,75 @@
+{
+  "duration_seconds": 15.967016,
+  "finished_at": "2026-10-11T11:12:11.697445Z",
+  "gates": [
+    {
+      "actual": 0,
+      "allowed": [
+        0
+      ],
+      "gate": "exit_code",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^\\[TB\\] CVA6\\+iDMA randomized campaign PASS$"
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^\\[TB\\] completion: .* completed=16 rc=0$"
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^\\[TB\\] diagnostic: .*seed=0x12345678 requested=16 completed=16 .*hash=0x94544f21(?: .*)?$"
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^\\[TB\\] DMA activity: jobs=16/16 "
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^\\[TB\\] AXI errors: read=0 write=0 injected=0 addr=0x[0-9a-f]+$"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "CVA6 random DMA firmware failed"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Verilog \\$stop"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Assertion failed"
+    }
+  ],
+  "interrupted": false,
+  "phase": "baremetal-random",
+  "process_log": "process.log",
+  "returncode": 0,
+  "started_at": "2026-10-11T11:11:55.729808Z",
+  "status": "passed",
+  "timed_out": false
+}

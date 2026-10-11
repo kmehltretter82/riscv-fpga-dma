@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/random_cell.py",
+    "--sim",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv",
+    "--memh",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh",
+    "--cases",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/cases.py",
+    "--result-dir",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T111155Z-2/baremetal-random/native",
+    "--seed",
+    "0x12345678",
+    "--count",
+    "16",
+    "--timing",
+    "random",
+    "--scenario",
+    "clean",
+    "--timeout-cycles",
+    "84000000"
+  ],
+  "argv_shell_quoted_for_display_only": "/usr/bin/python3 /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/random_cell.py --sim /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv --memh /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh --cases /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/cases.py --result-dir /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T111155Z-2/baremetal-random/native --seed 0x12345678 --count 16 --timing random --scenario clean --timeout-cycles 84000000",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt",
+  "description": "One deterministic 16-descriptor randomized CVA6+iDMA cell using the tested channel-coupler credit backport.",
+  "environment_overrides": {},
+  "phase": "baremetal-random",
+  "started_at": "2026-10-11T11:11:55.729808Z",
+  "timeout_seconds": 300
+}

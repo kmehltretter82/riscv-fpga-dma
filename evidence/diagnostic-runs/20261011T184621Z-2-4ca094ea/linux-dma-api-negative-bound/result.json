@@ -1,0 +1,41 @@
+{
+  "duration_seconds": 5.080206,
+  "finished_at": "2026-10-11T18:46:29.112194Z",
+  "gates": [
+    {
+      "actual": 1,
+      "allowed": [
+        1
+      ],
+      "gate": "exit_code",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "timeout after 100 cycles; iDMA jobs=0/0 busy=0"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-API-NEGATIVE-PASS"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-MAPPING-NEGATIVE-PASS"
+    }
+  ],
+  "interrupted": false,
+  "phase": "linux-dma-api-negative-bound",
+  "process_log": "process.log",
+  "returncode": 1,
+  "started_at": "2026-10-11T18:46:24.031292Z",
+  "status": "passed",
+  "timed_out": false
+}

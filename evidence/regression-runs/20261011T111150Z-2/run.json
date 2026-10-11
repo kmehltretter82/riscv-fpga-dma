@@ -1,0 +1,69 @@
+{
+  "finished_at": "2026-10-11T11:11:50.354298Z",
+  "interrupted": false,
+  "manifest": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/manifest.json",
+  "manifest_sha256": "bb04f210e9b6a51935f3a2131494550949a2e0fa61b2d876d8157e1d24f7e233",
+  "results": [
+    {
+      "duration_seconds": 0.016671,
+      "finished_at": "2026-10-11T11:11:50.353357Z",
+      "gates": [
+        {
+          "actual": 0,
+          "allowed": [
+            0
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 30,
+          "expected_exact": 30,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "(?m)^Test [0-9]{2} : .*: PASS$"
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "(?m)^Test 30 : Big endian model .*: PASS$"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "(?m)^Test [0-9]{2} : .*: FAIL$"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "AddressSanitizer"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "runtime error:"
+        }
+      ],
+      "interrupted": false,
+      "phase": "iommu-reference",
+      "process_log": "process.log",
+      "returncode": 0,
+      "started_at": "2026-10-11T11:11:50.336156Z",
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "run_id": "20261011T111150Z-2",
+  "schema_version": 1,
+  "selected": [
+    "iommu-reference"
+  ],
+  "started_at": "2026-10-11T11:11:50.314526Z",
+  "status": "passed"
+}

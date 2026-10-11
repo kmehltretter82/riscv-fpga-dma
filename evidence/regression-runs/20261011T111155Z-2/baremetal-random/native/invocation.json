@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh",
+    "+SEED=12345678",
+    "+CASES=16",
+    "+SKIP_CASES=0",
+    "+EXEC_MASK=00000000",
+    "+TIMING_SEED=8c032fc1",
+    "+EXPECT_HASH=94544f21",
+    "+TIMEOUT_CYCLES=84000000",
+    "+AXI_RANDOM"
+  ],
+  "argv_shell_quoted_for_display_only": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh +SEED=12345678 +CASES=16 +SKIP_CASES=0 +EXEC_MASK=00000000 +TIMING_SEED=8c032fc1 +EXPECT_HASH=94544f21 +TIMEOUT_CYCLES=84000000 +AXI_RANDOM",
+  "count": 16,
+  "descriptor_hash": "0x94544f21",
+  "scenario": "clean",
+  "seed": "0x12345678",
+  "timing": "random",
+  "timing_seed": "0x8c032fc1"
+}

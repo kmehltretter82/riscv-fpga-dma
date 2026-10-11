@@ -1,0 +1,54 @@
+{
+  "duration_seconds": 93.370777,
+  "finished_at": "2026-10-11T11:41:39.281239Z",
+  "gates": [
+    {
+      "actual": 0,
+      "allowed": [
+        0
+      ],
+      "gate": "exit_code",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "actual": 12,
+      "expected_exact": 12,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^PASS stall[01]-(?:read|write)-burst[012]$"
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "(?m)^PASS: 12/12 read/write burst-position and latency cases$"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "adapter failure:"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Verilog \\$stop"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Assertion failed"
+    }
+  ],
+  "interrupted": false,
+  "phase": "baremetal-error-drain",
+  "process_log": "process.log",
+  "returncode": 0,
+  "started_at": "2026-10-11T11:40:05.909728Z",
+  "status": "passed",
+  "timed_out": false
+}

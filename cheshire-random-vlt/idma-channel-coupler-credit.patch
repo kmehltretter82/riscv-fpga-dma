@@ -1,0 +1,246 @@
+diff --git a/src/backend/idma_axi_write.sv b/src/backend/idma_axi_write.sv
+index ee27349..af775eb 100644
+--- a/src/backend/idma_axi_write.sv
++++ b/src/backend/idma_axi_write.sv
+@@ -68,6 +68,11 @@ module idma_axi_write #(
+     /// AXI4+ATOP write manager port response
+     input  write_rsp_t write_rsp_i,
+ 
++    /// Write channel state used by the R-AW coupler
++    output logic w_chan_valid_o,
++    output logic w_chan_ready_o,
++    output logic w_chan_first_o,
++
+     /// Data from buffer
+     input  byte_t [StrbWidth-1:0] buffer_out_i,
+     /// Valid from buffer
+@@ -256,6 +261,10 @@ module idma_axi_write #(
+         end
+     end
+ 
++    assign w_chan_valid_o = write_req_o.w_valid;
++    assign w_chan_ready_o = write_rsp_i.w_ready;
++    assign w_chan_first_o = first_w;
++
+ 
+     //--------------------------------------
+     // Write response
+diff --git a/src/backend/idma_channel_coupler.sv b/src/backend/idma_channel_coupler.sv
+index 1491716..6ed07f4 100644
+--- a/src/backend/idma_channel_coupler.sv
++++ b/src/backend/idma_channel_coupler.sv
+@@ -21,6 +21,8 @@ module idma_channel_coupler #(
+     parameter int unsigned AxiIdWidth = 32'd1,
+     /// Print the info of the FIFO configuration
+     parameter bit PrintFifoInfo = 1'b0,
++    /// Derive AW credits from available W data instead of R bursts
++    parameter bit WriteDataCredits = 1'b0,
+     /// AXI 4 `AW` channel type
+     parameter type axi_aw_chan_t = logic
+ )(
+@@ -31,6 +33,15 @@ module idma_channel_coupler #(
+     /// Testmode in
+     input  logic testmode_i,
+ 
++    /// W request valid
++    input  logic w_req_valid_i,
++    /// W request ready
++    input  logic w_req_ready_i,
++    /// First W request
++    input  logic w_req_first_i,
++    /// Does the W burst belong to a decoupled request?
++    input  logic w_decouple_aw_i,
++
+     /// R response valid
+     input  logic r_rsp_valid_i,
+     /// R response ready
+@@ -60,7 +71,7 @@ module idma_channel_coupler #(
+ );
+ 
+     /// The width of the credit counter keeping track of the transfers
+-    localparam int unsigned CounterWidth = cf_math_pkg::idx_width(NumAxInFlight);
++    localparam int unsigned CounterWidth = cf_math_pkg::idx_width(NumAxInFlight + 1);
+ 
+     /// Credit counter type
+     typedef logic [CounterWidth-1:0] cnt_t;
+@@ -75,7 +86,7 @@ module idma_channel_coupler #(
+     logic    aw_ready, aw_valid;
+     logic    aw_decoupled_head;
+ 
+-    // first R arrives -> AW can be sent
++    // First usable data arrives -> AW can be sent.
+     logic first;
+ 
+     // aw ready i decoupled
+@@ -87,8 +98,20 @@ module idma_channel_coupler #(
+     // counter to keep track of AR to send
+     cnt_t aw_to_send_d, aw_to_send_q;
+ 
+-    // first signal -> an R has arrived that needs to free an AW
+-    assign first = r_rsp_valid_i & r_rsp_ready_i & r_rsp_first_i & !r_decouple_aw_i;
++    logic aw_stall_d, aw_stall_q;
++
++    if (WriteDataCredits) begin : gen_write_data_credits
++        // Pulse once when the first W beat is available.  Suppress repeats
++        // while the W channel is stalled.
++        assign first = w_req_valid_i & w_req_first_i &
++                       ~aw_stall_q & ~w_decouple_aw_i;
++        assign aw_stall_d = w_req_valid_i & ~w_req_ready_i;
++    end else begin : gen_read_data_credits
++        // Legacy behavior: one credit for every first R beat.
++        assign first = r_rsp_valid_i & r_rsp_ready_i &
++                       r_rsp_first_i & !r_decouple_aw_i;
++        assign aw_stall_d = 1'b0;
++    end
+ 
+     // stream fifo to hold AWs back
+     stream_fifo_optimal_wrap #(
+@@ -132,26 +155,31 @@ module idma_channel_coupler #(
+ 
+         // defaults
+         aw_to_send_d = aw_to_send_q;
++        aw_sent      = 1'b0;
+ 
+-        // if we bypass the logic
+-        aw_sent = aw_decoupled_head & aw_valid;
+-
+-        // first is asserted and aw is ready -> just send AW out
+-        // without changing the credit counter value
+-        if (aw_ready_decoupled & first) begin
++        // A decoupled AW at the head is released without consuming a credit.
++        // Preserve a simultaneous credit for the next coupled AW.
++        if (aw_valid & aw_decoupled_head) begin
+             aw_sent = 1'b1;
++            if (first) begin
++                aw_to_send_d = aw_to_send_q + 1;
++            end
+         end
+ 
+-        // if first is asserted and aw is not ready -> increment
+-        // credit counter
+-        else if (!aw_ready_decoupled & first) begin
+-            aw_to_send_d = aw_to_send_q + 1;
++        // A coupled AW needs either a same-cycle first beat or a banked
++        // credit.  Consume a banked credit only when the AW is accepted.
++        else if (aw_valid & (first | (aw_to_send_q != '0))) begin
++            aw_sent = 1'b1;
++            if (aw_ready_decoupled & !first) begin
++                aw_to_send_d = aw_to_send_q - 1;
++            end else if (!aw_ready_decoupled & first) begin
++                aw_to_send_d = aw_to_send_q + 1;
++            end
+         end
+ 
+-        // if not first, aw is ready and we have credit -> count down
+-        else if (aw_ready_decoupled & !first & aw_to_send_q != '0) begin
+-            aw_sent = 1'b1;
+-            aw_to_send_d = aw_to_send_q - 1;
++        // No AW can be released this cycle, so bank the read credit.
++        else if (first) begin
++            aw_to_send_d = aw_to_send_q + 1;
+         end
+     end
+ 
+@@ -180,6 +208,7 @@ module idma_channel_coupler #(
+ 
+     // state
+     `FF(aw_to_send_q, aw_to_send_d, '0, clk_i, rst_ni)
++    `FF(aw_stall_q, aw_stall_d, '0, clk_i, rst_ni)
+ 
+ 
+ endmodule
+diff --git a/target/rtl/idma_generated.sv b/target/rtl/idma_generated.sv
+index c5b9266..ffe15cd 100644
+--- a/target/rtl/idma_generated.sv
++++ b/target/rtl/idma_generated.sv
+@@ -105,6 +105,11 @@ module idma_transport_layer_rw_axi #(
+     output logic r_chan_ready_o,
+     output logic r_chan_valid_o,
+ 
++    /// Write channel state used by the R-AW coupler
++    output logic w_chan_valid_o,
++    output logic w_chan_ready_o,
++    output logic w_chan_first_o,
++
+     /// Read part of the datapath is busy
+     output logic r_dp_busy_o,
+     /// Write part of the datapath is busy
+@@ -238,6 +243,9 @@ module idma_transport_layer_rw_axi #(
+         .aw_ready_o         ( aw_ready_o ),
+         .write_req_o        ( axi_write_req_o ),
+         .write_rsp_i        ( axi_write_rsp_i ),
++        .w_chan_valid_o     ( w_chan_valid_o ),
++        .w_chan_ready_o     ( w_chan_ready_o ),
++        .w_chan_first_o     ( w_chan_first_o ),
+         .buffer_out_i       ( buffer_out_shifted ),
+         .buffer_out_valid_i ( buffer_out_valid_shifted ),
+         .buffer_out_ready_o ( buffer_out_ready )
+@@ -2786,7 +2794,8 @@ module idma_legalizer_rw_axi #(
+             tailer: OffsetWidth'(w_num_bytes + w_addr_offset),
+             shift: opt_tf_q.write_shift,
+             num_beats: w_req_o.aw_req.axi.aw_chan.len,
+-            is_single: w_req_o.aw_req.axi.aw_chan.len == '0
++            is_single: w_req_o.aw_req.axi.aw_chan.len == '0,
++            decouple_aw: opt_tf_q.decouple_aw
+         };
+         
+     end
+@@ -5307,6 +5316,7 @@ module idma_backend_rw_axi #(
+         offset_t             shift;
+         axi_pkg::len_t       num_beats;
+         logic                is_single;
++        logic                decouple_aw;
+     } w_dp_req_t;
+ 
+     /// The datapath write response type provides feedback from the write part of the datapath:
+@@ -5424,6 +5434,11 @@ module idma_backend_rw_axi #(
+     logic r_chan_valid;
+     logic r_chan_ready;
+ 
++    // Write channel state used to release coupled AW requests
++    logic w_chan_valid;
++    logic w_chan_ready;
++    logic w_chan_first;
++
+     //--------------------------------------
+     // Reject Zero Length Transfers
+     //--------------------------------------
+@@ -5532,7 +5547,8 @@ module idma_backend_rw_axi #(
+             tailer:    OffsetWidth'(idma_req_i.length + idma_req_i.dst_addr[OffsetWidth-1:0]),
+             shift:     OffsetWidth'(- idma_req_i.dst_addr[OffsetWidth-1:0]),
+             num_beats: len,
+-            is_single: len == '0
++            is_single: len == '0,
++            decouple_aw: idma_req_i.opt.beo.decouple_aw
+         };
+ 
+         // if the legalizer is bypassed; every burst is the last of the 1D transfer
+@@ -5756,7 +5772,10 @@ module idma_backend_rw_axi #(
+         .w_dp_busy_o     ( busy_o.w_dp_busy     ),
+         .buffer_busy_o   ( busy_o.buffer_busy   ),
+         .r_chan_ready_o  ( r_chan_ready         ),
+-        .r_chan_valid_o  ( r_chan_valid         )
++        .r_chan_valid_o  ( r_chan_valid         ),
++        .w_chan_valid_o  ( w_chan_valid         ),
++        .w_chan_ready_o  ( w_chan_ready         ),
++        .w_chan_first_o  ( w_chan_first         )
+     );
+ 
+     //--------------------------------------
+@@ -5771,11 +5790,16 @@ module idma_backend_rw_axi #(
+             .UserWidth       ( UserWidth                   ),
+             .AxiIdWidth      ( AxiIdWidth                  ),
+             .PrintFifoInfo   ( PrintFifoInfo               ),
++            .WriteDataCredits( 1'b1                        ),
+             .axi_aw_chan_t   ( write_meta_channel_t        )
+         ) i_idma_channel_coupler (
+             .clk_i            ( clk_i                       ),
+             .rst_ni           ( rst_ni                      ),
+             .testmode_i       ( testmode_i                  ),
++            .w_req_valid_i    ( w_chan_valid                ),
++            .w_req_ready_i    ( w_chan_ready                ),
++            .w_req_first_i    ( w_chan_first                ),
++            .w_decouple_aw_i  ( w_dp_req_out.decouple_aw    ),
+             .r_rsp_valid_i    ( r_chan_valid                ),
+             .r_rsp_ready_i    ( r_chan_ready                ),
+             .r_rsp_first_i    ( r_dp_rsp.first              ),

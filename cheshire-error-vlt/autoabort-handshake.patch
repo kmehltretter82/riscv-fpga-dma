@@ -1,0 +1,129 @@
+--- a/hw/cheshire_idma_wrap.sv
++++ b/hw/cheshire_idma_wrap.sv
+@@ -106,8 +106,13 @@
+   logic         be_valid;
+   logic         be_ready;
+   idma_rsp_t    idma_rsp;
++  idma_rsp_t    idma_nd_rsp;
+   logic         idma_rsp_valid;
+   logic         idma_rsp_ready;
++  logic         idma_rsp_sink_ready;
++  logic         idma_rsp_forward_valid;
++  logic         idma_eh_req_valid;
++  logic         idma_eh_req_ready;
+ 
+   // ID signals
+   logic              issue_id;
+@@ -186,9 +191,9 @@
+       .ready_i    ( be_ready  )
+     );
+ 
+-    assign retire_id = idma_rsp_valid & idma_rsp_ready;
++    assign retire_id = idma_rsp_valid & idma_rsp_ready & !idma_rsp.error;
+     assign issue_id  = be_valid_d & be_ready_d;
+-    assign idma_rsp_ready = 1'b1;
++    assign idma_rsp_sink_ready = 1'b1;
+ 
+     idma_transfer_id_gen #(
+       .IdWidth ( IdCounterWidth )
+@@ -255,19 +260,19 @@
+       .nd_req_i           ( idma_nd_req       ),
+       .nd_req_valid_i     ( idma_nd_req_valid ),
+       .nd_req_ready_o     ( idma_nd_req_ready ),
+-      .nd_rsp_o           ( ),
++      .nd_rsp_o           ( idma_nd_rsp ),
+       .nd_rsp_valid_o     ( idma_nd_rsp_valid ),
+       .nd_rsp_ready_i     ( idma_nd_rsp_ready ),
+       .burst_req_o        ( burst_req ),
+       .burst_req_valid_o  ( be_valid  ),
+       .burst_req_ready_i  ( be_ready  ),
+       .burst_rsp_i        ( idma_rsp       ),
+-      .burst_rsp_valid_i  ( idma_rsp_valid ),
+-      .burst_rsp_ready_o  ( idma_rsp_ready ),
++      .burst_rsp_valid_i  ( idma_rsp_forward_valid ),
++      .burst_rsp_ready_o  ( idma_rsp_sink_ready ),
+       .busy_o             ( me_busy )
+     );
+ 
+-    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready;
++    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready & !idma_nd_rsp.error;
+     assign issue_id  = idma_nd_req_valid_d & idma_nd_req_ready_d;
+     assign idma_nd_rsp_ready = 1'b1;
+ 
+@@ -284,6 +289,54 @@
+ 
+   end
+ 
++  // The error handler uses a request/response protocol: accept the error
++  // notification, stop consuming responses while submitting the selected
++  // action, then resume the response channel for transfer completion.
++  typedef enum logic [1:0] {
++    EhAcceptRsp,
++    EhSendAction,
++    EhWaitCompletion
++  } eh_state_t;
++  eh_state_t eh_state_d, eh_state_q;
++
++  always_comb begin
++    eh_state_d = eh_state_q;
++    idma_rsp_ready = 1'b0;
++    idma_rsp_forward_valid = 1'b0;
++    idma_eh_req_valid = 1'b0;
++    unique case (eh_state_q)
++      EhAcceptRsp: begin
++        idma_rsp_ready = idma_rsp_sink_ready;
++        idma_rsp_forward_valid = idma_rsp_valid;
++        if (idma_rsp_valid && idma_rsp_ready && idma_rsp.error)
++          eh_state_d = EhSendAction;
++      end
++      EhSendAction: begin
++        idma_eh_req_valid = 1'b1;
++        if (idma_eh_req_ready)
++          eh_state_d = EhWaitCompletion;
++      end
++      EhWaitCompletion: begin
++        idma_rsp_ready = idma_rsp_sink_ready;
++        idma_rsp_forward_valid = idma_rsp_valid;
++        if (idma_rsp_valid && idma_rsp_ready) begin
++          if (idma_rsp.error)
++            eh_state_d = EhSendAction;
++          else
++            eh_state_d = EhAcceptRsp;
++        end
++      end
++      default: eh_state_d = EhAcceptRsp;
++    endcase
++  end
++
++  always_ff @(posedge clk_i or negedge rst_ni) begin
++    if (!rst_ni)
++      eh_state_q <= EhAcceptRsp;
++    else
++      eh_state_q <= eh_state_d;
++  end
++
+   idma_backend_rw_axi #(
+     .CombinedShifter      ( 1'b0 ),
+     .DataWidth            ( AxiDataWidth ),
+@@ -296,7 +349,7 @@
+     .RAWCouplingAvail     ( RAWCouplingAvail),
+     .HardwareLegalizer    ( 1 ),
+     .RejectZeroTransfers  ( 1 ),
+-    .ErrorCap             ( idma_pkg::NO_ERROR_HANDLING ),
++    .ErrorCap             ( idma_pkg::ERROR_HANDLING ),
+     .PrintFifoInfo        ( 0 ),
+     .NumAxInFlight        ( NumAxInFlight ),
+     .MemSysDepth          ( MemSysDepth ),
+@@ -318,9 +371,9 @@
+     .idma_rsp_o       ( idma_rsp       ),
+     .rsp_valid_o      ( idma_rsp_valid ),
+     .rsp_ready_i      ( idma_rsp_ready ),
+-    .idma_eh_req_i    ( '0 ),
+-    .eh_req_valid_i   ( '0 ),
+-    .eh_req_ready_o   ( ),
++    .idma_eh_req_i    ( idma_pkg::ABORT ),
++    .eh_req_valid_i   ( idma_eh_req_valid ),
++    .eh_req_ready_o   ( idma_eh_req_ready ),
+     .axi_read_req_o   ( axi_read_req ),
+     .axi_read_rsp_i   ( axi_read_rsp ),
+     .axi_write_req_o  ( axi_write_req ),

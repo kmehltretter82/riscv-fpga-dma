@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/baremetal-irq-abort/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh"
+  ],
+  "argv_shell_quoted_for_display_only": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/baremetal-irq-abort/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation",
+  "description": "Focused completion-IRQ, software-abort, terminal-drain, and clean-recovery proof.",
+  "environment_overrides": {},
+  "phase": "baremetal-irq-abort",
+  "started_at": "2026-10-11T11:12:11.748789Z",
+  "timeout_seconds": 120
+}

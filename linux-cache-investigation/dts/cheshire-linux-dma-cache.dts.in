@@ -1,0 +1,100 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <2>;
+	#size-cells = <2>;
+	compatible = "eth,cheshire-dev";
+	model = "ETH Zurich Cheshire (Phase 11 @CELL@ cache oracle)";
+
+	chosen {
+		stdout-path = "/soc/serial@3002000:1562500";
+		bootargs = "console=ttyS0,1562500 quiet loglevel=4 rdinit=/init dma_debug_entries=1024 phase11.cell=@CELL@";
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x02000000>;
+	};
+
+	dma-cache-test {
+		compatible = "openai,cheshire-idma-cache-test";
+		dmas = <&idma 0>;
+		dma-names = "memcpy";
+		status = "okay";
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <1000000>;
+
+		CPU0: cpu@0 {
+			device_type = "cpu";
+			status = "okay";
+			compatible = "openhwgroup,cva6", "riscv";
+			clock-frequency = <50000000>;
+			reg = <0>;
+			riscv,isa = "rv64imafdc";
+			mmu-type = "riscv,sv39";
+
+			CPU0_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+	};
+
+	soc: soc {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "simple-bus";
+		ranges;
+
+		/*
+		 * This remains intentionally noncoherent.  Linux must execute the
+		 * three DMA cache operations; no unmodified Cheshire path snoops L1.
+		 */
+		idma: dma-controller@1000000 {
+			compatible = "pulp,cheshire-idma-v0.6.4-test";
+			reg = <0x0 0x01000000 0x0 0x1000>,
+			      <0x0 0x03009040 0x0 0x0040>;
+			reg-names = "control", "bus-error";
+			interrupt-parent = <&PLIC0>;
+			interrupts = <2>, <3>;
+			interrupt-names = "completion", "error";
+			dma-channels = <1>;
+			#dma-cells = <1>;
+			status = "okay";
+		};
+
+		serial@3002000 {
+			compatible = "ns16550a";
+			clock-frequency = <50000000>;
+			current-speed = <1562500>;
+			interrupt-parent = <&PLIC0>;
+			interrupts = <1>;
+			reg = <0x0 0x03002000 0x0 0x1000>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		clint@2040000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&CPU0_intc 3 &CPU0_intc 7>;
+			reg = <0x0 0x02040000 0x0 0x00040000>;
+		};
+
+		PLIC0: interrupt-controller@4000000 {
+			compatible = "riscv,plic0";
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+			interrupt-controller;
+			interrupts-extended = <&CPU0_intc 11 &CPU0_intc 9>;
+			riscv,max-priority = <7>;
+			riscv,ndev = <20>;
+			reg = <0x0 0x04000000 0x0 0x04000000>;
+		};
+	};
+};

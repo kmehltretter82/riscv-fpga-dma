@@ -1,0 +1,20 @@
+# Reconstructed upstream repositories and shared source links.
+/.tools/
+/.cache/
+/cheshire/
+/idma/
+/idma-cheshire-pin/
+/sources/
+/cheshire-random-vlt/.idma-coupler-fix/
+/linux-error-investigation/sources/
+/linux-driver-investigation/sources/
+/linux-fpga-investigation/sources/
+/linux-mapping-investigation/sources/
+/linux-cache-investigation/sources/
+/linux-coherent-investigation/sources/
+
+# Generated build and run products.
+**/build/
+**/out/
+**/__pycache__/
+/regression/runs/

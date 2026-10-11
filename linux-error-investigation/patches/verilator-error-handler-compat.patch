@@ -1,0 +1,20 @@
+--- a/src/backend/idma_error_handler.sv
++++ b/src/backend/idma_error_handler.sv
+@@ -300,7 +300,7 @@
+                         // the counter is 0 -> no transfer in the datapath. This is an impossible
+                         // state
+                         end else begin
+-                            `ASSERT_NEVER(inactive_tf_wait, 1'b1, clk_i, !rst_ni)
++                            assert (1'b0) else $error("inactive transfer in WAIT");
+                         end
+                     end
+                 end
+@@ -333,7 +333,7 @@
+                     // the counter is 0 -> no transfer in the datapath. This is an impossible
+                     // state
+                     end else begin
+-                        `ASSERT_NEVER(inactive_tf_wait_last_w, 1'b1, clk_i, !rst_ni)
++                        assert (1'b0) else $error("inactive transfer in WAIT_LAST_W");
+                     end
+                 end
+             end

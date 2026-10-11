@@ -1,0 +1,107 @@
+diff --git a/iommu_ref_model/test/test_app.c b/iommu_ref_model/test/test_app.c
+index 9f55a6a..9d1c6cc 100644
+--- a/iommu_ref_model/test/test_app.c
++++ b/iommu_ref_model/test/test_app.c
+@@ -1411,7 +1411,7 @@ main(void) {
+             if ( (i == 4) && DC.iohgatp.MODE != IOHGATP_Sv57x4 ) continue;
+             if ( (i == 3) && DC.iohgatp.MODE != IOHGATP_Sv48x4 &&
+                              DC.iohgatp.MODE != IOHGATP_Sv57x4 ) continue;
+-            gpa = gpa | ((1 << (i * 9)) * PAGESIZE) | 2048;
++            gpa = gpa | ((1UL << (i * 9)) * PAGESIZE) | 2048;
+             req.tr.iova = gpa;
+             gpte.PPN = 512UL * 512UL * 512UL * 512UL;
+             gpte.PPN |= (1UL << (i * 9UL));
+@@ -1516,7 +1516,7 @@ main(void) {
+     gpa = gpa * 16;
+     write_memory_test((char *)&DC, DC_addr, 64);
+     iodir(&iommu, INVAL_DDT, 1, 0x012345, 0);
+-    gpa = gpa | ((1 << (i * 9)) * PAGESIZE) | 2048;
++    gpa = gpa | ((1UL << (4 * 9)) * PAGESIZE) | 2048;
+     req.tr.iova = gpa;
+     gpte.PPN = 512UL * 512UL * 512UL * 512UL;
+     gpte_addr = add_g_stage_pte(&iommu, DC.iohgatp, gpa, gpte, 4);
+@@ -1720,7 +1720,7 @@ main(void) {
+             if ( (i == 4) && DC.fsc.iosatp.MODE != IOSATP_Sv57 ) continue;
+             if ( (i == 3) && DC.fsc.iosatp.MODE != IOSATP_Sv48 &&
+                              DC.fsc.iosatp.MODE != IOSATP_Sv57 ) continue;
+-            gva = gva | ((1 << (i * 9)) * PAGESIZE) | 2048;
++            gva = gva | ((1UL << (i * 9)) * PAGESIZE) | 2048;
+             req.tr.iova = gva;
+             pte.PPN = 512UL * 512UL * 512UL * 512UL;
+             pte.PPN |= (1UL << (i * 9UL));
+@@ -1865,7 +1865,7 @@ main(void) {
+     iodir(&iommu, INVAL_DDT, 1, 0x012349, 0);
+     gva = 512UL * 512UL * 512UL * 512UL * PAGESIZE;
+     gva = gva * 16;
+-    gva = gva | ((1 << (i * 9)) * PAGESIZE) | 2048;
++    gva = gva | ((1UL << (4 * 9)) * PAGESIZE) | 2048;
+     req.tr.iova = gva;
+     pte.PPN = 512UL * 512UL * 512UL * 512UL;
+     pte_addr = add_s_stage_pte(DC.fsc.iosatp, gva, pte, 4, DC.tc.SXL);
+@@ -2249,7 +2249,7 @@ main(void) {
+     iodir(&iommu, INVAL_DDT, 1, 0x012349, 0);
+     gva = 512UL * 512UL * 512UL * 512UL * PAGESIZE;
+     gva = gva * 24;
+-    gva = gva | ((1 << (i * 9)) * PAGESIZE) | 2048;
++    gva = gva | ((1UL << (0 * 9)) * PAGESIZE) | 2048;
+     req.tr.iova = gva;
+     pte.PPN = 512UL * 512UL * 512UL * 512UL;
+     pte_addr = add_s_stage_pte(DC.fsc.iosatp, gva, pte, 0, DC.tc.SXL);
+@@ -2645,7 +2645,7 @@ main(void) {
+ 
+     // Disable supervisory requests
+     PC.ta.ENS = 0;
+-    write_memory_test((char *)&PC, PC_addr, 64);
++    write_memory_test((char *)&PC, PC_addr, sizeof(PC));
+     iodir(&iommu, INVAL_PDT, 1, 0x112233, 0xBABEC);
+     send_translation_request(&iommu, 0x112233, 1, 0xBABEC, 0,
+              0, 1, 0, ADDR_TYPE_PCIE_ATS_TRANSLATION_REQUEST, gva,
+@@ -2655,7 +2655,7 @@ main(void) {
+     // Disable supv to user access
+     PC.ta.ENS = 1;
+     PC.ta.SUM = 0;
+-    write_memory_test((char *)&PC, PC_addr, 64);
++    write_memory_test((char *)&PC, PC_addr, sizeof(PC));
+     iodir(&iommu, INVAL_PDT, 1, 0x112233, 0xBABEC);
+     send_translation_request(&iommu, 0x112233, 1, 0xBABEC, 0,
+              0, 1, 0, ADDR_TYPE_PCIE_ATS_TRANSLATION_REQUEST, gva,
+@@ -3800,8 +3800,8 @@ main(void) {
+         cmd.low = 0;
+         temp = 0;
+         for ( j = 0; j < 64; j++ ) {
+-            cmd.low = 1 << i;
+-            cmd.high = 1 << j;
++            cmd.low = 1ULL << i;
++            cmd.high = 1ULL << j;
+             cmd.any.opcode = i;
+             if ( cmd.any.opcode == IOTINVAL ) {
+                 if ( cmd.iotinval.rsvd == 0 &&
+@@ -4032,7 +4032,7 @@ main(void) {
+     DC_addr = add_device(&iommu, 0x000000, 1, 0, 0, 0, 0, 0,
+                          1, 1, 0, 0, 1,
+                          IOHGATP_Sv32x4, IOSATP_Bare, PD20,
+-                         MSIPTP_Flat, 1, 0xFFFFFFFFFF, 0x1000000000);
++                         MSIPTP_Off, 1, 0xFFFFFFFFFF, 0x1000000000);
+ 
+     read_memory_test(DC_addr, 64, (char *)&DC);
+ 
+@@ -4087,6 +4087,10 @@ main(void) {
+     gpte_addr = add_g_stage_pte(&iommu, DC.iohgatp, gpa, gpte, 0);
+     gva = 0x100000;
+     pte_addr = add_vs_stage_pte(&iommu, PC.fsc.iosatp, gva, pte, 0, DC.iohgatp, DC.tc.SXL);
++    iodir(&iommu, INVAL_DDT, 1, 0x000000, 0);
++    iodir(&iommu, INVAL_PDT, 1, 0x000000, 0xBABEC);
++    iotinval(&iommu, GVMA, 0, 0, 0, 0, 0, 0);
++    iotinval(&iommu, VMA, 0, 0, 0, 0, 0, 0);
+     send_translation_request(&iommu, 0x000000, 1, 0xBABEC, 0,
+              0, 1, 0, ADDR_TYPE_UNTRANSLATED, gva,
+              1, WRITE, &req, &rsp);
+@@ -4565,7 +4569,7 @@ main(void) {
+             if ( (i == 4) && DC.iohgatp.MODE != IOHGATP_Sv57x4 ) continue;
+             if ( (i == 3) && DC.iohgatp.MODE != IOHGATP_Sv48x4 &&
+                              DC.iohgatp.MODE != IOHGATP_Sv57x4 ) continue;
+-            gpa = gpa | ((1 << (i * 9)) * PAGESIZE) | 2048;
++            gpa = gpa | ((1UL << (i * 9)) * PAGESIZE) | 2048;
+             req.tr.iova = gpa;
+             gpte.PPN = 512UL * 512UL * 512UL * 512UL;
+             gpte.PPN |= (1UL << (i * 9UL));

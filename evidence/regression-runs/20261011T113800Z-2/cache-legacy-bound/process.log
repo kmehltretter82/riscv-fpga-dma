@@ -1,0 +1,7 @@
+[TB] cache contract: legacy WB writeback+invalidate on FENCE
+[TB] loading OpenSBI+Linux payload: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-legacy.memh
+[TB] reset released
+[TB] heartbeat cycles=1 jobs=0/0 flush=0/0
+[2390000] %Fatal: tb_cheshire_linux_dma_cache.sv:552: Assertion failed in tb_cheshire_linux_dma_cache.boot: timeout after 100 cycles jobs=0/0
+%Error: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/rtl/tb_cheshire_linux_dma_cache.sv:552: Verilog $stop
+Aborting...

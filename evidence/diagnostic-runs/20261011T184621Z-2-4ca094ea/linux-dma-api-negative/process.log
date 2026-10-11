@@ -1,0 +1,455 @@
+[TB] cache contract: legacy WB, FENCE writes back and invalidates
+[TB] loading OpenSBI+Linux payload: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-negative.memh
+[TB] payload load complete; waiting 20 clocks before reset release
+[TB] reset released
+[TB] UART divisor-minus-one changed at cycle=1: 0x0000
+[TB] heartbeat cycles=1 commit_pc=0x0000000000000000 next_pc=0x0000000000000000 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[TB] first platform-ROM fetch at cycle=3 next_pc=0x0000000080000000
+[TB] heartbeat cycles=10 commit_pc=0x0000000000000000 next_pc=0x0000000080000000 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[TB] heartbeat cycles=100 commit_pc=0x0000000000000000 next_pc=0x0000000080000000 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[TB] heartbeat cycles=1000 commit_pc=0x0000000000000000 next_pc=0x0000000080000004 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[TB] LLC BIST complete at cycle=1548
+[TB] commit transition=1 cycle=1576 pc=0x0000000080000000
+[TB] commit transition=2 cycle=1578 pc=0x0000000080000004
+[TB] commit transition=3 cycle=1580 pc=0x0000000080000008
+[TB] commit transition=4 cycle=1581 pc=0x000000008000000c
+[TB] commit transition=5 cycle=1582 pc=0x0000000000000000
+[TB] commit transition=6 cycle=1611 pc=0x0000000080000550
+[TB] commit transition=7 cycle=1613 pc=0x0000000080000552
+[TB] commit transition=8 cycle=1614 pc=0x0000000000000000
+[TB] commit transition=9 cycle=1630 pc=0x0000000080000010
+[TB] commit transition=10 cycle=1632 pc=0x0000000080000014
+[TB] commit transition=11 cycle=1634 pc=0x0000000080000018
+[TB] commit transition=12 cycle=1635 pc=0x000000008000001c
+[TB] commit transition=13 cycle=1636 pc=0x0000000080000008
+[TB] commit transition=14 cycle=1652 pc=0x0000000080000020
+[TB] commit transition=15 cycle=1654 pc=0x0000000080000022
+[TB] commit transition=16 cycle=1656 pc=0x0000000080000550
+[TB] commit transition=17 cycle=1677 pc=0x000000008000002a
+[TB] commit transition=18 cycle=1679 pc=0x0000000080000552
+[TB] commit transition=19 cycle=1695 pc=0x000000008000002e
+[TB] commit transition=20 cycle=1697 pc=0x0000000080000032
+[TB] commit transition=21 cycle=1698 pc=0x0000000080000034
+[TB] commit transition=22 cycle=2252 pc=0x0000000080000038
+[TB] commit transition=23 cycle=2259 pc=0x000000008000003c
+[TB] commit transition=24 cycle=2260 pc=0x0000000080000040
+[TB] commit transition=25 cycle=2261 pc=0x0000000080000044
+[TB] commit transition=26 cycle=2262 pc=0x0000000080000048
+[TB] commit transition=27 cycle=2263 pc=0x000000008000004c
+[TB] commit transition=28 cycle=2265 pc=0x0000000080000054
+[TB] commit transition=29 cycle=2266 pc=0x0000000080000058
+[TB] commit transition=30 cycle=2289 pc=0x000000008000005c
+[TB] commit transition=31 cycle=2290 pc=0x0000000080000060
+[TB] commit transition=32 cycle=2291 pc=0x0000000080000064
+[TB] commit transition=33 cycle=2292 pc=0x0000000080000068
+[TB] commit transition=34 cycle=2294 pc=0x0000000080000070
+[TB] commit transition=35 cycle=2295 pc=0x0000000080000074
+[TB] commit transition=36 cycle=2296 pc=0x0000000080000078
+[TB] commit transition=37 cycle=2297 pc=0x000000008000007c
+[TB] commit transition=38 cycle=2298 pc=0x0000000080000060
+[TB] commit transition=39 cycle=2304 pc=0x0000000080000080
+[TB] commit transition=40 cycle=2345 pc=0x0000000080000086
+[TB] commit transition=41 cycle=2346 pc=0x000000008000008a
+[TB] commit transition=42 cycle=2353 pc=0x000000008000008e
+[TB] commit transition=43 cycle=2388 pc=0x0000000080000092
+[TB] commit transition=44 cycle=2389 pc=0x0000000080000094
+[TB] commit transition=45 cycle=2390 pc=0x0000000080000096
+[TB] commit transition=46 cycle=2392 pc=0x000000008000009c
+[TB] commit transition=47 cycle=2393 pc=0x0000000080000080
+[TB] commit transition=48 cycle=2416 pc=0x0000000080000086
+[TB] commit transition=49 cycle=2417 pc=0x000000008000008a
+[TB] commit transition=50 cycle=2420 pc=0x000000008000008e
+[TB] commit transition=51 cycle=2421 pc=0x0000000080000092
+[TB] commit transition=52 cycle=2422 pc=0x0000000080000094
+[TB] commit transition=53 cycle=2423 pc=0x0000000080000096
+[TB] commit transition=54 cycle=2425 pc=0x000000008000009c
+[TB] commit transition=55 cycle=2426 pc=0x0000000080000086
+[TB] commit transition=56 cycle=2443 pc=0x0000000080000080
+[TB] commit transition=57 cycle=2468 pc=0x0000000080000086
+[TB] commit transition=58 cycle=2469 pc=0x000000008000008a
+[TB] commit transition=59 cycle=2472 pc=0x000000008000008e
+[TB] commit transition=60 cycle=2504 pc=0x0000000080000092
+[TB] commit transition=61 cycle=2505 pc=0x0000000080000094
+[TB] commit transition=62 cycle=2506 pc=0x0000000080000096
+[TB] commit transition=63 cycle=2508 pc=0x000000008000009c
+[TB] commit transition=64 cycle=2509 pc=0x0000000080000080
+[TB] commit transition=65 cycle=2532 pc=0x0000000080000086
+[TB] commit transition=66 cycle=2533 pc=0x000000008000008a
+[TB] commit transition=67 cycle=2536 pc=0x000000008000008e
+[TB] commit transition=68 cycle=2538 pc=0x0000000080000092
+[TB] commit transition=69 cycle=2539 pc=0x0000000080000094
+[TB] commit transition=70 cycle=2540 pc=0x0000000080000096
+[TB] commit transition=71 cycle=2542 pc=0x000000008000009c
+[TB] commit transition=72 cycle=2543 pc=0x0000000080000080
+[TB] commit transition=73 cycle=2588 pc=0x0000000080000086
+[TB] commit transition=74 cycle=2589 pc=0x000000008000008a
+[TB] commit transition=75 cycle=2593 pc=0x000000008000008e
+[TB] commit transition=76 cycle=2642 pc=0x0000000080000092
+[TB] commit transition=77 cycle=2643 pc=0x0000000080000094
+[TB] commit transition=78 cycle=2644 pc=0x0000000080000096
+[TB] commit transition=79 cycle=2646 pc=0x000000008000009c
+[TB] commit transition=80 cycle=2647 pc=0x0000000080000080
+[TB] commit transition=81 cycle=2681 pc=0x0000000080000086
+[TB] commit transition=82 cycle=2682 pc=0x000000008000008a
+[TB] commit transition=83 cycle=2685 pc=0x000000008000008e
+[TB] commit transition=84 cycle=2687 pc=0x0000000080000092
+[TB] commit transition=85 cycle=2688 pc=0x0000000080000094
+[TB] commit transition=86 cycle=2689 pc=0x0000000080000096
+[TB] commit transition=87 cycle=2691 pc=0x000000008000009c
+[TB] commit transition=88 cycle=2692 pc=0x0000000080000080
+[TB] commit transition=89 cycle=2726 pc=0x0000000080000086
+[TB] commit transition=90 cycle=2727 pc=0x000000008000008a
+[TB] commit transition=91 cycle=2730 pc=0x000000008000008e
+[TB] commit transition=92 cycle=2751 pc=0x0000000080000092
+[TB] commit transition=93 cycle=2752 pc=0x0000000080000094
+[TB] commit transition=94 cycle=2753 pc=0x0000000080000096
+[TB] commit transition=95 cycle=2755 pc=0x000000008000009c
+[TB] commit transition=96 cycle=2756 pc=0x0000000080000080
+[TB] commit transition=97 cycle=2779 pc=0x0000000080000086
+[TB] commit transition=98 cycle=2780 pc=0x000000008000008a
+[TB] commit transition=99 cycle=2783 pc=0x000000008000008e
+[TB] commit transition=100 cycle=2785 pc=0x0000000080000092
+[TB] commit transition=101 cycle=2786 pc=0x0000000080000094
+[TB] commit transition=102 cycle=2787 pc=0x0000000080000096
+[TB] commit transition=103 cycle=2789 pc=0x000000008000009c
+[TB] commit transition=104 cycle=2790 pc=0x0000000080000080
+[TB] commit transition=105 cycle=2835 pc=0x0000000080000086
+[TB] commit transition=106 cycle=2836 pc=0x000000008000008a
+[TB] commit transition=107 cycle=2840 pc=0x000000008000008e
+[TB] commit transition=108 cycle=2889 pc=0x0000000080000092
+[TB] commit transition=109 cycle=2890 pc=0x0000000080000094
+[TB] commit transition=110 cycle=2891 pc=0x0000000080000096
+[TB] commit transition=111 cycle=2893 pc=0x000000008000009c
+[TB] commit transition=112 cycle=2894 pc=0x0000000080000080
+[TB] commit transition=113 cycle=2917 pc=0x0000000080000086
+[TB] commit transition=114 cycle=2918 pc=0x000000008000008a
+[TB] commit transition=115 cycle=2921 pc=0x000000008000008e
+[TB] commit transition=116 cycle=2923 pc=0x0000000080000092
+[TB] commit transition=117 cycle=2924 pc=0x0000000080000094
+[TB] commit transition=118 cycle=2925 pc=0x0000000080000096
+[TB] commit transition=119 cycle=2927 pc=0x000000008000009c
+[TB] commit transition=120 cycle=2928 pc=0x0000000080000080
+[TB] commit transition=121 cycle=2962 pc=0x0000000080000086
+[TB] commit transition=122 cycle=2963 pc=0x000000008000008a
+[TB] commit transition=123 cycle=2967 pc=0x000000008000008e
+[TB] commit transition=124 cycle=3027 pc=0x0000000080000092
+[TB] commit transition=125 cycle=3028 pc=0x0000000080000094
+[TB] commit transition=126 cycle=3029 pc=0x0000000080000096
+[TB] commit transition=127 cycle=3031 pc=0x000000008000009c
+[TB] commit transition=128 cycle=3032 pc=0x0000000080000080
+[TB] commit transition=129 cycle=3055 pc=0x0000000080000086
+[TB] commit transition=130 cycle=3056 pc=0x000000008000008a
+[TB] commit transition=131 cycle=3059 pc=0x000000008000008e
+[TB] commit transition=132 cycle=3061 pc=0x0000000080000092
+[TB] commit transition=133 cycle=3062 pc=0x0000000080000094
+[TB] commit transition=134 cycle=3063 pc=0x0000000080000096
+[TB] commit transition=135 cycle=3065 pc=0x000000008000009c
+[TB] commit transition=136 cycle=3066 pc=0x0000000080000080
+[TB] commit transition=137 cycle=3100 pc=0x0000000080000086
+[TB] commit transition=138 cycle=3101 pc=0x000000008000008a
+[TB] commit transition=139 cycle=3104 pc=0x000000008000008e
+[TB] commit transition=140 cycle=3125 pc=0x0000000080000092
+[TB] commit transition=141 cycle=3126 pc=0x0000000080000094
+[TB] commit transition=142 cycle=3127 pc=0x0000000080000096
+[TB] commit transition=143 cycle=3129 pc=0x000000008000009c
+[TB] commit transition=144 cycle=3130 pc=0x0000000080000080
+[TB] commit transition=145 cycle=3164 pc=0x0000000080000086
+[TB] commit transition=146 cycle=3165 pc=0x000000008000008a
+[TB] commit transition=147 cycle=3168 pc=0x000000008000008e
+[TB] commit transition=148 cycle=3170 pc=0x0000000080000092
+[TB] commit transition=149 cycle=3171 pc=0x0000000080000094
+[TB] commit transition=150 cycle=3172 pc=0x0000000080000096
+[TB] commit transition=151 cycle=3174 pc=0x000000008000009c
+[TB] commit transition=152 cycle=3175 pc=0x0000000080000080
+[TB] commit transition=153 cycle=3220 pc=0x0000000080000086
+[TB] commit transition=154 cycle=3221 pc=0x000000008000008a
+[TB] commit transition=155 cycle=3225 pc=0x000000008000008e
+[TB] commit transition=156 cycle=3263 pc=0x0000000080000092
+[TB] commit transition=157 cycle=3264 pc=0x0000000080000094
+[TB] commit transition=158 cycle=3265 pc=0x0000000080000096
+[TB] commit transition=159 cycle=3267 pc=0x000000008000009c
+[TB] commit transition=160 cycle=3268 pc=0x0000000080000080
+[TB] commit transition=161 cycle=3291 pc=0x0000000080000086
+[TB] commit transition=162 cycle=3292 pc=0x000000008000008a
+[TB] commit transition=163 cycle=3295 pc=0x000000008000008e
+[TB] commit transition=164 cycle=3297 pc=0x0000000080000092
+[TB] commit transition=165 cycle=3298 pc=0x0000000080000094
+[TB] commit transition=166 cycle=3299 pc=0x0000000080000096
+[TB] commit transition=167 cycle=3301 pc=0x000000008000009c
+[TB] commit transition=168 cycle=3302 pc=0x0000000080000080
+[TB] commit transition=169 cycle=3347 pc=0x0000000080000086
+[TB] commit transition=170 cycle=3348 pc=0x000000008000008a
+[TB] commit transition=171 cycle=3352 pc=0x000000008000008e
+[TB] commit transition=172 cycle=3401 pc=0x0000000080000092
+[TB] commit transition=173 cycle=3402 pc=0x0000000080000094
+[TB] commit transition=174 cycle=3403 pc=0x0000000080000096
+[TB] commit transition=175 cycle=3405 pc=0x000000008000009c
+[TB] commit transition=176 cycle=3406 pc=0x0000000080000080
+[TB] commit transition=177 cycle=3429 pc=0x0000000080000086
+[TB] commit transition=178 cycle=3430 pc=0x000000008000008a
+[TB] commit transition=179 cycle=3433 pc=0x000000008000008e
+[TB] commit transition=180 cycle=3435 pc=0x0000000080000092
+[TB] commit transition=181 cycle=3436 pc=0x0000000080000094
+[TB] commit transition=182 cycle=3437 pc=0x0000000080000096
+[TB] commit transition=183 cycle=3439 pc=0x000000008000009c
+[TB] commit transition=184 cycle=3440 pc=0x0000000080000080
+[TB] commit transition=185 cycle=3485 pc=0x0000000080000086
+[TB] commit transition=186 cycle=3486 pc=0x000000008000008a
+[TB] commit transition=187 cycle=3490 pc=0x000000008000008e
+[TB] commit transition=188 cycle=3539 pc=0x0000000080000092
+[TB] commit transition=189 cycle=3540 pc=0x0000000080000094
+[TB] commit transition=190 cycle=3541 pc=0x0000000080000096
+[TB] commit transition=191 cycle=3543 pc=0x000000008000009c
+[TB] commit transition=192 cycle=3544 pc=0x0000000080000080
+[TB] commit transition=193 cycle=3567 pc=0x0000000080000086
+[TB] commit transition=194 cycle=3568 pc=0x000000008000008a
+[TB] commit transition=195 cycle=3571 pc=0x000000008000008e
+[TB] commit transition=196 cycle=3573 pc=0x0000000080000092
+[TB] commit transition=197 cycle=3574 pc=0x0000000080000094
+[TB] commit transition=198 cycle=3575 pc=0x0000000080000096
+[TB] commit transition=199 cycle=3577 pc=0x000000008000009c
+[TB] commit transition=200 cycle=3578 pc=0x0000000080000080
+[TB] D-cache flush request=1 cycle=9632
+[TB] heartbeat cycles=10000 commit_pc=0x00000000800000b6 next_pc=0x0000000080000526 llc_ar/r=83/664 llc_aw/w/b=0/0/0
+[TB] D-cache flush request=2 cycle=31854
+[TB] D-cache flush request=3 cycle=45493
+[TB] heartbeat cycles=100000 commit_pc=0x000000008000031c next_pc=0x0000000080000526 llc_ar/r=207/1656 llc_aw/w/b=0/0/0
+[TB] D-cache flush request=4 cycle=123129
+[TB] D-cache flush request=5 cycle=169668
+[TB] D-cache flush request=6 cycle=173871
+[TB] D-cache flush request=7 cycle=187760
+[TB] D-cache flush request=8 cycle=204883
+[TB] D-cache flush request=9 cycle=207859
+[TB] D-cache flush request=10 cycle=211985
+[TB] D-cache flush request=11 cycle=532637
+[TB] exception=1 cycle=539393 pc=0x000000008000b088 cause=0x2 tval=0x00000000da002573 trap_vector=0x000000008000ce20
+[TB] exception=2 cycle=539614 pc=0x000000008000b0bc cause=0x2 tval=0x00000000c0102573 trap_vector=0x000000008000ce20
+[TB] exception=3 cycle=539784 pc=0x000000008000b0e4 cause=0x2 tval=0x00000000fb002573 trap_vector=0x000000008000ce20
+[TB] exception=4 cycle=539944 pc=0x000000008000b10e cause=0x2 tval=0x0000000014d02573 trap_vector=0x000000008000ce20
+[TB] exception=5 cycle=540043 pc=0x000000008000b138 cause=0x2 tval=0x0000000030c02573 trap_vector=0x000000008000ce20
+[TB] exception=6 cycle=540203 pc=0x000000008000b162 cause=0x2 tval=0x0000000032102673 trap_vector=0x000000008000ce20
+[TB] D-cache flush request=12 cycle=544020
+[TB] D-cache flush request=13 cycle=550317
+[TB] D-cache flush request=14 cycle=551220
+[TB] UART divisor-minus-one changed at cycle=552006: 0x0001
+[TB] D-cache flush request=15 cycle=552087
+[TB] D-cache flush request=16 cycle=552949
+[TB] D-cache flush request=17 cycle=553792
+[TB] D-cache flush request=18 cycle=554652
+[TB] D-cache flush request=19 cycle=555583
+[TB] D-cache flush request=20 cycle=556448
+[TB] D-cache flush request=21 cycle=557284
+[TB] D-cache flush request=22 cycle=571787
+[TB] D-cache flush request=23 cycle=744937
+[TB] D-cache flush request=24 cycle=749387
+[TB] D-cache flush request=25 cycle=754238
+[TB] D-cache flush request=26 cycle=761782
+[TB] D-cache flush request=27 cycle=762345
+[TB] D-cache flush request=28 cycle=762908
+[TB] D-cache flush request=29 cycle=763471
+[TB] D-cache flush request=30 cycle=764034
+[TB] D-cache flush request=31 cycle=764597
+[TB] D-cache flush request=32 cycle=765160
+[TB] heartbeat cycles=1000000 commit_pc=0x00000000800113b6 next_pc=0x000000008001125c llc_ar/r=756/6048 llc_aw/w/b=0/0/0
+[TB] first Linux-payload fetch at cycle=1729173 next_pc=0x0000000080200000
+[TB] heartbeat cycles=2000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=1616/12928 llc_aw/w/b=11/88/11
+[TB] heartbeat cycles=3000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=2522/20176 llc_aw/w/b=306/2448/306
+[TB] heartbeat cycles=4000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=3596/28768 llc_aw/w/b=1084/8672/1084
+[TB] heartbeat cycles=5000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=4843/38744 llc_aw/w/b=2120/16960/2120
+[TB] heartbeat cycles=6000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=6170/49360 llc_aw/w/b=3324/26592/3324
+[TB] heartbeat cycles=7000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=7563/60504 llc_aw/w/b=4602/36816/4602
+[TB] heartbeat cycles=8000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=8959/71672 llc_aw/w/b=5868/46944/5868
+[TB] heartbeat cycles=9000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=10330/82640 llc_aw/w/b=7133/57064/7133
+[TB] heartbeat cycles=10000000 commit_pc=0x00000000802000f8 next_pc=0x00000000802000fc llc_ar/r=11739/93912 llc_aw/w/b=8440/67520/8440
+[TB] exception=7 cycle=10936743 pc=0x0000000080200088 cause=0xc tval=0x0000000080200088 trap_vector=0xffffffff80000088
+[TB] exception=8 cycle=10937249 pc=0xffffffff80000162 cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] heartbeat cycles=11000000 commit_pc=0xffffffff80011a3e next_pc=0xffffffff80206880 llc_ar/r=13088/104704 llc_aw/w/b=9678/77424/9678
+[TB] exception=9 cycle=11837016 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=10 cycle=11892321 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=11 cycle=11893840 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=12 cycle=11943222 pc=0xffffffff8000baec cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=13 cycle=11988918 pc=0xffffffff8000baec cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] heartbeat cycles=12000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=13825/110600 llc_aw/w/b=10324/82592/10324
+[TB] exception=14 cycle=12033799 pc=0xffffffff8000baec cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=15 cycle=12079396 pc=0xffffffff8000baec cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=16 cycle=12081134 pc=0xffffffff8000baec cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] heartbeat cycles=13000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=14451/115608 llc_aw/w/b=10759/86072/10759
+[TB] heartbeat cycles=14000000 commit_pc=0xffffffff8017a21a next_pc=0xffffffff8017980c llc_ar/r=14796/118368 llc_aw/w/b=10979/87832/10979
+[TB] exception=17 cycle=14170242 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=18 cycle=14172395 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=19 cycle=14317478 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] exception=20 cycle=14319036 pc=0xffffffff8000babc cause=0x9 tval=0x0000000000000073 trap_vector=0x0000000080000400
+[TB] heartbeat cycles=15000000 commit_pc=0xffffffff8020b23e next_pc=0xffffffff8020b360 llc_ar/r=15696/125565 llc_aw/w/b=11502/92016/11502
+[TB] heartbeat cycles=16000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=16588/132704 llc_aw/w/b=11986/95888/11986
+[TB] heartbeat cycles=17000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=17828/142619 llc_aw/w/b=12844/102752/12844
+[TB] heartbeat cycles=18000000 commit_pc=0xffffffff8020b242 next_pc=0xffffffff8020b36e llc_ar/r=18942/151536 llc_aw/w/b=13782/110256/13782
+[TB] heartbeat cycles=19000000 commit_pc=0xffffffff8020b23a next_pc=0xffffffff8020b360 llc_ar/r=19946/159568 llc_aw/w/b=14716/117728/14716
+[TB] heartbeat cycles=20000000 commit_pc=0xffffffff8020b242 next_pc=0xffffffff8020b36e llc_ar/r=20850/166800 llc_aw/w/b=15567/124536/15567
+[TB] heartbeat cycles=21000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=21366/170928 llc_aw/w/b=16045/128360/16045
+[TB] heartbeat cycles=22000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=22460/179680 llc_aw/w/b=17062/136496/17062
+[TB] heartbeat cycles=23000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=23527/188216 llc_aw/w/b=18091/144728/18091
+[TB] heartbeat cycles=24000000 commit_pc=0xffffffff8020b23a next_pc=0xffffffff8020b360 llc_ar/r=24427/195416 llc_aw/w/b=18982/151856/18982
+[TB] heartbeat cycles=25000000 commit_pc=0xffffffff8020b23a next_pc=0xffffffff8020b360 llc_ar/r=25300/202400 llc_aw/w/b=19832/158656/19832
+[TB] heartbeat cycles=26000000 commit_pc=0xffffffff8020b23e next_pc=0xffffffff8020b360 llc_ar/r=26212/209696 llc_aw/w/b=20709/165672/20709
+[TB] heartbeat cycles=27000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=26802/214416 llc_aw/w/b=21284/170272/21284
+[TB] heartbeat cycles=28000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=27840/222720 llc_aw/w/b=22308/178464/22308
+[TB] heartbeat cycles=29000000 commit_pc=0xffffffff8020b23a next_pc=0xffffffff8020b360 llc_ar/r=28872/230976 llc_aw/w/b=23320/186560/23320
+[TB] heartbeat cycles=30000000 commit_pc=0xffffffff8020b23a next_pc=0xffffffff8020b360 llc_ar/r=29773/238184 llc_aw/w/b=24205/193640/24205
+[TB] heartbeat cycles=31000000 commit_pc=0xffffffff8020b248 next_pc=0xffffffff8020b374 llc_ar/r=30703/245624 llc_aw/w/b=25103/200824/25103
+[TB] heartbeat cycles=32000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=31137/249096 llc_aw/w/b=25533/204264/25533
+[TB] heartbeat cycles=33000000 commit_pc=0xffffffff800b00e2 next_pc=0xffffffff8020b360 llc_ar/r=32173/257384 llc_aw/w/b=26559/212472/26559
+[TB] heartbeat cycles=34000000 commit_pc=0xffffffff8019f3f4 next_pc=0xffffffff8019f430 llc_ar/r=33309/266472 llc_aw/w/b=27681/221448/27681
+[TB] heartbeat cycles=35000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=34258/274064 llc_aw/w/b=28537/228296/28537
+[TB] heartbeat cycles=36000000 commit_pc=0xffffffff8019f424 next_pc=0xffffffff8019f3e0 llc_ar/r=35653/285224 llc_aw/w/b=29581/236648/29581
+[TB] heartbeat cycles=37000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=36598/292784 llc_aw/w/b=30271/242168/30271
+[TB] heartbeat cycles=38000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=37438/299504 llc_aw/w/b=30903/247224/30903
+[TB] heartbeat cycles=39000000 commit_pc=0xffffffff8019f3fc next_pc=0xffffffff8019f3b0 llc_ar/r=38780/310240 llc_aw/w/b=31946/255568/31946
+[TB] heartbeat cycles=40000000 commit_pc=0xffffffff8019f3dc next_pc=0xffffffff8019f418 llc_ar/r=40021/320168 llc_aw/w/b=33021/264168/33021
+[TB] heartbeat cycles=41000000 commit_pc=0xffffffff8019f3ec next_pc=0xffffffff8019f428 llc_ar/r=41350/330800 llc_aw/w/b=34210/273680/34210
+[TB] heartbeat cycles=42000000 commit_pc=0xffffffff8019f3d4 next_pc=0xffffffff8019f410 llc_ar/r=42756/342048 llc_aw/w/b=35483/283864/35483
+[TB] heartbeat cycles=43000000 commit_pc=0xffffffff8019f3cc next_pc=0xffffffff8019f408 llc_ar/r=44130/353040 llc_aw/w/b=36743/293944/36743
+[TB] heartbeat cycles=44000000 commit_pc=0xffffffff8019f3cc next_pc=0xffffffff8019f408 llc_ar/r=45365/362920 llc_aw/w/b=37874/302992/37874
+[TB] heartbeat cycles=45000000 commit_pc=0xffffffff8019f41c next_pc=0xffffffff8019f3d8 llc_ar/r=46585/372680 llc_aw/w/b=38997/311976/38997
+[TB] heartbeat cycles=46000000 commit_pc=0xffffffff8019f3e8 next_pc=0xffffffff8019f420 llc_ar/r=47789/382312 llc_aw/w/b=40105/320840/40105
+[TB] heartbeat cycles=47000000 commit_pc=0xffffffff8019f3b4 next_pc=0xffffffff8019f3f0 llc_ar/r=48986/391888 llc_aw/w/b=41213/329704/41213
+[TB] heartbeat cycles=48000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=50179/401432 llc_aw/w/b=42342/338736/42342
+[TB] heartbeat cycles=49000000 commit_pc=0xffffffff8020dea0 next_pc=0xffffffff8020de7c llc_ar/r=52469/419752 llc_aw/w/b=44114/352912/44114
+[TB] heartbeat cycles=50000000 commit_pc=0xffffffff8020d98c next_pc=0xffffffff8020d99a llc_ar/r=55514/444112 llc_aw/w/b=46555/372440/46555
+[TB] heartbeat cycles=51000000 commit_pc=0xffffffff8020d98c next_pc=0xffffffff8020d99a llc_ar/r=57163/457304 llc_aw/w/b=47995/383960/47995
+[TB] heartbeat cycles=52000000 commit_pc=0xffffffff8020d9be next_pc=0xffffffff800b10ae llc_ar/r=58707/469656 llc_aw/w/b=49321/394568/49321
+[TB] heartbeat cycles=53000000 commit_pc=0xffffffff8020d9be next_pc=0xffffffff800b10ae llc_ar/r=60192/481536 llc_aw/w/b=50609/404872/50609
+[TB] heartbeat cycles=54000000 commit_pc=0xffffffff8020d9be next_pc=0xffffffff800b10ae llc_ar/r=61701/493608 llc_aw/w/b=51927/415416/51927
+[TB] heartbeat cycles=55000000 commit_pc=0xffffffff800b04f4 next_pc=0xffffffff800b0530 llc_ar/r=62577/500616 llc_aw/w/b=52787/422296/52787
+[TB] heartbeat cycles=56000000 commit_pc=0xffffffff800b1228 next_pc=0xffffffff800b1230 llc_ar/r=64397/515176 llc_aw/w/b=54402/435216/54402
+[TB] heartbeat cycles=57000000 commit_pc=0xffffffff800b1228 next_pc=0xffffffff800b1230 llc_ar/r=65875/527000 llc_aw/w/b=55703/445624/55703
+[TB] heartbeat cycles=58000000 commit_pc=0xffffffff800b1228 next_pc=0xffffffff800b1230 llc_ar/r=67380/539040 llc_aw/w/b=57021/456168/57021
+[TB] heartbeat cycles=59000000 commit_pc=0xffffffff800b04f4 next_pc=0xffffffff800b05fc llc_ar/r=68730/549840 llc_aw/w/b=58255/466040/58255
+[TB] heartbeat cycles=60000000 commit_pc=0xffffffff800b0648 next_pc=0xffffffff800b079c llc_ar/r=69992/559936 llc_aw/w/b=59435/475480/59435
+[TB] heartbeat cycles=61000000 commit_pc=0xffffffff8020d9be next_pc=0xffffffff800b10ae llc_ar/r=71748/573984 llc_aw/w/b=61114/488912/61114
+[TB] heartbeat cycles=62000000 commit_pc=0xffffffff801a34a0 next_pc=0xffffffff801a34a0 llc_ar/r=72417/579336 llc_aw/w/b=61741/493928/61741
+[TB] heartbeat cycles=63000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b33d8 llc_ar/r=72856/582848 llc_aw/w/b=62103/496824/62103
+[TB] heartbeat cycles=64000000 commit_pc=0xffffffff8009a100 next_pc=0xffffffff8009a130 llc_ar/r=73712/589696 llc_aw/w/b=62802/502416/62802
+[TB] heartbeat cycles=65000000 commit_pc=0xffffffff8009a100 next_pc=0xffffffff8009a130 llc_ar/r=74440/595520 llc_aw/w/b=63452/507616/63452
+[TB] heartbeat cycles=66000000 commit_pc=0xffffffff8009a100 next_pc=0xffffffff8009a130 llc_ar/r=75172/601376 llc_aw/w/b=64123/512984/64123
+[TB] heartbeat cycles=67000000 commit_pc=0xffffffff8009a100 next_pc=0xffffffff8009a130 llc_ar/r=75896/607168 llc_aw/w/b=64819/518552/64819
+[TB] heartbeat cycles=68000000 commit_pc=0xffffffff8019f424 next_pc=0xffffffff8019f3e0 llc_ar/r=76607/612856 llc_aw/w/b=65496/523968/65496
+[TB] heartbeat cycles=69000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b321c llc_ar/r=77286/618288 llc_aw/w/b=66151/529208/66151
+[TB] heartbeat cycles=70000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b322a llc_ar/r=78282/626256 llc_aw/w/b=67041/536328/67041
+[TB] heartbeat cycles=71000000 commit_pc=0xffffffff800b6f84 next_pc=0xffffffff800b6fac llc_ar/r=79271/634168 llc_aw/w/b=67773/542184/67773
+[TB] heartbeat cycles=72000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b322a llc_ar/r=80011/640088 llc_aw/w/b=68296/546368/68296
+[TB] heartbeat cycles=73000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=81437/651496 llc_aw/w/b=69176/553408/69176
+[TB] heartbeat cycles=74000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=83081/664648 llc_aw/w/b=69898/559184/69898
+[TB] heartbeat cycles=75000000 commit_pc=0xffffffff80068e4c next_pc=0xffffffff80068e64 llc_ar/r=83979/671832 llc_aw/w/b=70209/561672/70209
+[TB] heartbeat cycles=76000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=84452/675616 llc_aw/w/b=70352/562816/70352
+[TB] heartbeat cycles=77000000 commit_pc=0xffffffff800b7d84 next_pc=0xffffffff800b7da2 llc_ar/r=85657/685256 llc_aw/w/b=70786/566288/70786
+[TB] heartbeat cycles=78000000 commit_pc=0xffffffff800b7d84 next_pc=0xffffffff800b7da6 llc_ar/r=86707/693656 llc_aw/w/b=71172/569376/71172
+[TB] heartbeat cycles=79000000 commit_pc=0xffffffff800c7dcc next_pc=0xffffffff800c7dfe llc_ar/r=87704/701632 llc_aw/w/b=71577/572616/71577
+[TB] heartbeat cycles=80000000 commit_pc=0xffffffff800f6404 next_pc=0xffffffff800f6420 llc_ar/r=88764/710112 llc_aw/w/b=71983/575864/71983
+[TB] heartbeat cycles=81000000 commit_pc=0xffffffff800ab190 next_pc=0xffffffff800afb36 llc_ar/r=89944/719552 llc_aw/w/b=72402/579216/72402
+[TB] heartbeat cycles=82000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=91195/729560 llc_aw/w/b=72893/583144/72893
+[TB] heartbeat cycles=83000000 commit_pc=0xffffffff800ab190 next_pc=0xffffffff800afb36 llc_ar/r=92761/742088 llc_aw/w/b=73470/587760/73470
+[TB] heartbeat cycles=84000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=93952/751616 llc_aw/w/b=73930/591440/73930
+[TB] heartbeat cycles=85000000 commit_pc=0xffffffff801a34d0 next_pc=0xffffffff801a34d0 llc_ar/r=94666/757328 llc_aw/w/b=74221/593768/74221
+[TB] heartbeat cycles=86000000 commit_pc=0xffffffff801a160e next_pc=0xffffffff801a18d2 llc_ar/r=95692/765536 llc_aw/w/b=74643/597144/74643
+[TB] heartbeat cycles=87000000 commit_pc=0xffffffff8002661e next_pc=0xffffffff8012b612 llc_ar/r=96772/774176 llc_aw/w/b=75097/600776/75097
+[TB] heartbeat cycles=88000000 commit_pc=0xffffffff800bcacc next_pc=0xffffffff800bcaee llc_ar/r=97765/782120 llc_aw/w/b=75545/604360/75545
+[TB] heartbeat cycles=89000000 commit_pc=0xffffffff8002f2cc next_pc=0xffffffff8003629e llc_ar/r=98975/791800 llc_aw/w/b=76064/608512/76064
+[TB] heartbeat cycles=90000000 commit_pc=0xffffffff800ab190 next_pc=0xffffffff800afb36 llc_ar/r=100156/801248 llc_aw/w/b=76568/612544/76568
+[TB] heartbeat cycles=91000000 commit_pc=0xffffffff801a14a0 next_pc=0xffffffff801a1860 llc_ar/r=101309/810472 llc_aw/w/b=77025/616200/77025
+[TB] heartbeat cycles=92000000 commit_pc=0xffffffff8002a560 next_pc=0xffffffff8012b614 llc_ar/r=102471/819768 llc_aw/w/b=77488/619904/77488
+[TB] heartbeat cycles=93000000 commit_pc=0xffffffff801a34a0 next_pc=0xffffffff8008ffdc llc_ar/r=103513/828104 llc_aw/w/b=77856/622848/77856
+[TB] heartbeat cycles=94000000 commit_pc=0xffffffff801a40de next_pc=0xffffffff801a4102 llc_ar/r=104968/839744 llc_aw/w/b=78261/626088/78261
+[TB] heartbeat cycles=95000000 commit_pc=0xffffffff8000f704 next_pc=0xffffffff8000faf4 llc_ar/r=106537/852296 llc_aw/w/b=78707/629656/78707
+[TB] heartbeat cycles=96000000 commit_pc=0xffffffff801a14a0 next_pc=0xffffffff801a14ce llc_ar/r=108123/864984 llc_aw/w/b=79175/633400/79175
+[TB] heartbeat cycles=97000000 commit_pc=0xffffffff80187a8c next_pc=0xffffffff8018781c llc_ar/r=109184/873472 llc_aw/w/b=79450/635600/79450
+[TB] heartbeat cycles=98000000 commit_pc=0xffffffff800486ce next_pc=0xffffffff800486fc llc_ar/r=109592/876736 llc_aw/w/b=79550/636400/79550
+[TB] heartbeat cycles=99000000 commit_pc=0xffffffff801a40e4 next_pc=0xffffffff80117e8c llc_ar/r=109786/878288 llc_aw/w/b=79609/636872/79609
+[TB] heartbeat cycles=100000000 commit_pc=0xffffffff800bcaa4 next_pc=0xffffffff800bcb58 llc_ar/r=110022/880176 llc_aw/w/b=79679/637432/79679
+[TB] heartbeat cycles=101000000 commit_pc=0xffffffff801a40de next_pc=0xffffffff801a4102 llc_ar/r=110197/881576 llc_aw/w/b=79740/637920/79740
+[TB] heartbeat cycles=102000000 commit_pc=0xffffffff801179a4 next_pc=0xffffffff80117602 llc_ar/r=110393/883144 llc_aw/w/b=79803/638424/79803
+[TB] heartbeat cycles=103000000 commit_pc=0xffffffff80048668 next_pc=0xffffffff8011972e llc_ar/r=110858/886864 llc_aw/w/b=79998/639984/79998
+[TB] heartbeat cycles=104000000 commit_pc=0xffffffff8016b4ec next_pc=0xffffffff8016b51a llc_ar/r=111268/890144 llc_aw/w/b=80156/641248/80156
+[TB] heartbeat cycles=105000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=111607/892856 llc_aw/w/b=80265/642120/80265
+[TB] heartbeat cycles=106000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=112291/898328 llc_aw/w/b=80481/643848/80481
+[TB] heartbeat cycles=107000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=113186/905488 llc_aw/w/b=80768/646144/80768
+[TB] heartbeat cycles=108000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=114439/915512 llc_aw/w/b=81296/650368/81296
+[TB] heartbeat cycles=109000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=115610/924880 llc_aw/w/b=82061/656488/82061
+[TB] heartbeat cycles=110000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665c llc_ar/r=116814/934512 llc_aw/w/b=82858/662864/82858
+[TB] heartbeat cycles=111000000 commit_pc=0xffffffff801a6640 next_pc=0xffffffff801a665a llc_ar/r=117936/943488 llc_aw/w/b=83750/670000/83750
+[TB] heartbeat cycles=112000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=118502/948016 llc_aw/w/b=84249/673992/84249
+[TB] heartbeat cycles=113000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=119322/954576 llc_aw/w/b=84957/679656/84957
+[TB] heartbeat cycles=114000000 commit_pc=0xffffffff8019f410 next_pc=0xffffffff8019f3c0 llc_ar/r=120102/960816 llc_aw/w/b=85637/685096/85637
+[TB] heartbeat cycles=115000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=120808/966464 llc_aw/w/b=86250/690000/86250
+[TB] heartbeat cycles=116000000 commit_pc=0xffffffff8008fba0 next_pc=0xffffffff8008fba4 llc_ar/r=122073/976584 llc_aw/w/b=87162/697296/87162
+[TB] heartbeat cycles=117000000 commit_pc=0xffffffff800b7d84 next_pc=0xffffffff800b7da6 llc_ar/r=123657/989256 llc_aw/w/b=87927/703416/87927
+[TB] heartbeat cycles=118000000 commit_pc=0xffffffff8019f434 next_pc=0xffffffff800aa994 llc_ar/r=124574/996592 llc_aw/w/b=88346/706768/88346
+[TB] heartbeat cycles=119000000 commit_pc=0xffffffff80187a8c next_pc=0xffffffff8018781c llc_ar/r=125563/1004504 llc_aw/w/b=88741/709928/88741
+[TB] heartbeat cycles=120000000 commit_pc=0xffffffff801a2416 next_pc=0xffffffff8019f352 llc_ar/r=126562/1012496 llc_aw/w/b=89066/712528/89066
+[TB] heartbeat cycles=121000000 commit_pc=0xffffffff801a34d0 next_pc=0xffffffff8016a192 llc_ar/r=127056/1016448 llc_aw/w/b=89202/713616/89202
+[TB] heartbeat cycles=122000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff801188b6 llc_ar/r=128077/1024616 llc_aw/w/b=89482/715856/89482
+[TB] heartbeat cycles=123000000 commit_pc=0xffffffff80186d1c next_pc=0xffffffff8012b614 llc_ar/r=128872/1030976 llc_aw/w/b=89690/717520/89690
+[TB] heartbeat cycles=124000000 commit_pc=0xffffffff801a40e4 next_pc=0xffffffff80117e8c llc_ar/r=129481/1035848 llc_aw/w/b=89828/718624/89828
+[TB] heartbeat cycles=125000000 commit_pc=0xffffffff8017f7a0 next_pc=0xffffffff8017f7c4 llc_ar/r=129855/1038840 llc_aw/w/b=89908/719264/89908
+[TB] heartbeat cycles=126000000 commit_pc=0xffffffff800bdf8a next_pc=0xffffffff800bdfa4 llc_ar/r=130183/1041464 llc_aw/w/b=89987/719896/89987
+[TB] heartbeat cycles=127000000 commit_pc=0xffffffff8019a456 next_pc=0xffffffff8019a454 llc_ar/r=130459/1043672 llc_aw/w/b=90071/720568/90071
+[TB] heartbeat cycles=128000000 commit_pc=0xffffffff800651a0 next_pc=0xffffffff8003f254 llc_ar/r=132163/1057304 llc_aw/w/b=90507/724056/90507
+[TB] heartbeat cycles=129000000 commit_pc=0xffffffff8019f436 next_pc=0xffffffff80006374 llc_ar/r=133849/1070792 llc_aw/w/b=91065/728520/91065
+[TB] heartbeat cycles=130000000 commit_pc=0xffffffff8002ee0a next_pc=0xffffffff8005333a llc_ar/r=135081/1080648 llc_aw/w/b=91473/731784/91473
+[TB] heartbeat cycles=131000000 commit_pc=0xffffffff80187a8c next_pc=0xffffffff8018781c llc_ar/r=136155/1089240 llc_aw/w/b=91823/734584/91823
+[TB] heartbeat cycles=132000000 commit_pc=0xffffffff8004e380 next_pc=0xffffffff8004e390 llc_ar/r=137159/1097272 llc_aw/w/b=92088/736704/92088
+[TB] heartbeat cycles=133000000 commit_pc=0xffffffff800e1d32 next_pc=0xffffffff800e1d44 llc_ar/r=138689/1109512 llc_aw/w/b=92478/739824/92478
+[TB] heartbeat cycles=134000000 commit_pc=0xffffffff801a34d0 next_pc=0xffffffff801a34d0 llc_ar/r=139926/1119408 llc_aw/w/b=92777/742216/92777
+[TB] heartbeat cycles=135000000 commit_pc=0xffffffff80187a8c next_pc=0xffffffff8018781c llc_ar/r=141448/1131584 llc_aw/w/b=93180/745440/93180
+[TB] heartbeat cycles=136000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff8011892a llc_ar/r=142408/1139264 llc_aw/w/b=93408/747264/93408
+[TB] heartbeat cycles=137000000 commit_pc=0xffffffff801179a4 next_pc=0xffffffff80119726 llc_ar/r=143008/1144064 llc_aw/w/b=93538/748304/93538
+[TB] heartbeat cycles=138000000 commit_pc=0xffffffff800ed2c4 next_pc=0xffffffff800ed2e0 llc_ar/r=143734/1149872 llc_aw/w/b=93697/749576/93697
+[TB] heartbeat cycles=139000000 commit_pc=0xffffffff8019f1bc next_pc=0xffffffff8019f1b4 llc_ar/r=144366/1154928 llc_aw/w/b=93841/750728/93841
+[TB] heartbeat cycles=140000000 commit_pc=0xffffffff801a240e next_pc=0xffffffff801a2422 llc_ar/r=145052/1160416 llc_aw/w/b=94000/752000/94000
+[TB] heartbeat cycles=141000000 commit_pc=0xffffffff801a4100 next_pc=0xffffffff80119880 llc_ar/r=145931/1167448 llc_aw/w/b=94195/753560/94195
+[TB] heartbeat cycles=142000000 commit_pc=0x000000008000047e next_pc=0x00000000800041dc llc_ar/r=146650/1173200 llc_aw/w/b=94365/754920/94365
+[TB] heartbeat cycles=143000000 commit_pc=0x000000008000c682 next_pc=0x0000000080004644 llc_ar/r=146777/1174216 llc_aw/w/b=94399/755192/94399
+[TB] heartbeat cycles=144000000 commit_pc=0xffffffff80009cd6 next_pc=0xffffffff80009f8c llc_ar/r=146904/1175232 llc_aw/w/b=94432/755456/94432
+[TB] heartbeat cycles=145000000 commit_pc=0x000000008000ca68 next_pc=0x000000008000c640 llc_ar/r=146906/1175248 llc_aw/w/b=94434/755472/94434
+[TB] heartbeat cycles=146000000 commit_pc=0x000000008000c8f0 next_pc=0x000000008000c910 llc_ar/r=146906/1175248 llc_aw/w/b=94434/755472/94434
+[TB] heartbeat cycles=147000000 commit_pc=0xffffffff800b04f4 next_pc=0xffffffff800b0530 llc_ar/r=147201/1177608 llc_aw/w/b=94507/756056/94507
+[TB] heartbeat cycles=148000000 commit_pc=0xffffffff8002661e next_pc=0xffffffff8012b612 llc_ar/r=148564/1188512 llc_aw/w/b=94905/759240/94905
+[TB] heartbeat cycles=149000000 commit_pc=0xffffffff800486ce next_pc=0xffffffff8019f46c llc_ar/r=150268/1202144 llc_aw/w/b=95374/762992/95374
+[TB] heartbeat cycles=150000000 commit_pc=0xffffffff80186d1c next_pc=0xffffffff8012b614 llc_ar/r=151523/1212184 llc_aw/w/b=95685/765480/95685
+[TB] heartbeat cycles=151000000 commit_pc=0xffffffff80083a3a next_pc=0xffffffff80083a68 llc_ar/r=153021/1224168 llc_aw/w/b=96013/768104/96013
+[TB] heartbeat cycles=152000000 commit_pc=0xffffffff80186e4c next_pc=0xffffffff80186eb0 llc_ar/r=154674/1237392 llc_aw/w/b=96398/771184/96398
+[TB] heartbeat cycles=153000000 commit_pc=0xffffffff800d991a next_pc=0xffffffff800d9954 llc_ar/r=155791/1246322 llc_aw/w/b=96676/773408/96676
+[TB] heartbeat cycles=154000000 commit_pc=0xffffffff801a2416 next_pc=0xffffffff8016e516 llc_ar/r=156725/1253800 llc_aw/w/b=96892/775136/96892
+[TB] heartbeat cycles=155000000 commit_pc=0xffffffff8008a144 next_pc=0xffffffff8007fe9a llc_ar/r=158093/1264744 llc_aw/w/b=97187/777496/97187
+[TB] heartbeat cycles=156000000 commit_pc=0xffffffff8003e396 next_pc=0xffffffff8003e3b4 llc_ar/r=159714/1277712 llc_aw/w/b=97573/780584/97573
+[TB] heartbeat cycles=157000000 commit_pc=0xffffffff8008aa2c next_pc=0xffffffff8008aa5e llc_ar/r=161324/1290592 llc_aw/w/b=98061/784488/98061
+[TB] heartbeat cycles=158000000 commit_pc=0x000000008001081e next_pc=0x0000000080010850 llc_ar/r=163052/1304416 llc_aw/w/b=98568/788544/98568
+[TB] heartbeat cycles=159000000 commit_pc=0xffffffff8008a144 next_pc=0xffffffff8007fe96 llc_ar/r=165169/1321352 llc_aw/w/b=99099/792792/99099
+[TB] heartbeat cycles=160000000 commit_pc=0xffffffff800b7d84 next_pc=0xffffffff800b7da6 llc_ar/r=166540/1332320 llc_aw/w/b=99495/795960/99495
+[TB] heartbeat cycles=161000000 commit_pc=0xffffffff801a3c7e next_pc=0xffffffff801a3cea llc_ar/r=168054/1344432 llc_aw/w/b=99962/799696/99962
+[TB] heartbeat cycles=162000000 commit_pc=0xffffffff80186d1c next_pc=0xffffffff8012b614 llc_ar/r=169583/1356664 llc_aw/w/b=100390/803120/100390
+[TB] heartbeat cycles=163000000 commit_pc=0xffffffff8008a144 next_pc=0xffffffff8007fe96 llc_ar/r=171392/1371136 llc_aw/w/b=100814/806512/100814
+[TB] heartbeat cycles=164000000 commit_pc=0xffffffff8019f468 next_pc=0xffffffff8019f478 llc_ar/r=172544/1380352 llc_aw/w/b=101114/808912/101114
+[TB] heartbeat cycles=165000000 commit_pc=0xffffffff800bb812 next_pc=0xffffffff800bb838 llc_ar/r=174610/1396880 llc_aw/w/b=101605/812840/101605
+[TB] heartbeat cycles=166000000 commit_pc=0xffffffff800ed2c4 next_pc=0xffffffff800ed2e0 llc_ar/r=176389/1411112 llc_aw/w/b=102025/816200/102025
+[TB] heartbeat cycles=167000000 commit_pc=0xffffffff801a34d0 next_pc=0xffffffff801a2410 llc_ar/r=177694/1421552 llc_aw/w/b=102279/818232/102279
+[TB] heartbeat cycles=168000000 commit_pc=0xffffffff80130612 next_pc=0xffffffff80130634 llc_ar/r=179150/1433200 llc_aw/w/b=102573/820584/102573
+[TB] heartbeat cycles=169000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff801188b8 llc_ar/r=180307/1442456 llc_aw/w/b=102777/822216/102777
+[TB] heartbeat cycles=170000000 commit_pc=0xffffffff801179a4 next_pc=0xffffffff80117602 llc_ar/r=180686/1445488 llc_aw/w/b=102847/822776/102847
+[TB] heartbeat cycles=171000000 commit_pc=0xffffffff80187a8c next_pc=0xffffffff8018781c llc_ar/r=180973/1447784 llc_aw/w/b=102913/823304/102913
+[TB] heartbeat cycles=172000000 commit_pc=0xffffffff80048668 next_pc=0xffffffff80048694 llc_ar/r=181491/1451928 llc_aw/w/b=103057/824456/103057
+[TB] heartbeat cycles=173000000 commit_pc=0xffffffff800ab190 next_pc=0xffffffff800ab1ac llc_ar/r=183258/1466064 llc_aw/w/b=103472/827776/103472
+[TB] heartbeat cycles=174000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff801188b8 llc_ar/r=184653/1477224 llc_aw/w/b=103894/831152/103894
+[TB] heartbeat cycles=175000000 commit_pc=0xffffffff800b7d84 next_pc=0xffffffff800b7da6 llc_ar/r=185632/1485056 llc_aw/w/b=104169/833352/104169
+[TB] heartbeat cycles=176000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff801188b8 llc_ar/r=186976/1495808 llc_aw/w/b=104587/836696/104587
+[TB] heartbeat cycles=177000000 commit_pc=0xffffffff8019f19a next_pc=0xffffffff8019f1c4 llc_ar/r=187873/1502984 llc_aw/w/b=104817/838536/104817
+[TB] heartbeat cycles=178000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=188636/1509088 llc_aw/w/b=105001/840008/105001
+[TB] heartbeat cycles=179000000 commit_pc=0xffffffff800b31dc next_pc=0xffffffff800b3214 llc_ar/r=189502/1516016 llc_aw/w/b=105227/841816/105227
+[TB] heartbeat cycles=180000000 commit_pc=0xffffffff801a14a0 next_pc=0xffffffff801a14ce llc_ar/r=190401/1523208 llc_aw/w/b=105456/843648/105456
+[TB] heartbeat cycles=181000000 commit_pc=0xffffffff801a40fc next_pc=0xffffffff80119880 llc_ar/r=191549/1532392 llc_aw/w/b=105789/846312/105789
+[TB] heartbeat cycles=182000000 commit_pc=0xffffffff801a13bc next_pc=0xffffffff80177e6e llc_ar/r=192340/1538720 llc_aw/w/b=106006/848048/106006
+[TB] heartbeat cycles=183000000 commit_pc=0xffffffff8019f3e0 next_pc=0xffffffff8019f41c llc_ar/r=193614/1548910 llc_aw/w/b=106342/850736/106342
+[TB] heartbeat cycles=184000000 commit_pc=0xffffffff80186d1c next_pc=0xffffffff8012b614 llc_ar/r=194393/1555144 llc_aw/w/b=106559/852472/106559
+[TB] heartbeat cycles=185000000 commit_pc=0xffffffff80048668 next_pc=0xffffffff80117ec8 llc_ar/r=195048/1560384 llc_aw/w/b=106723/853784/106723
+[TB] heartbeat cycles=186000000 commit_pc=0xffffffff80118910 next_pc=0xffffffff801188b8 llc_ar/r=195351/1562808 llc_aw/w/b=106801/854408/106801
+[TB] heartbeat cycles=187000000 commit_pc=0xffffffff80186d1c next_pc=0xffffffff8012b614 llc_ar/r=196550/1572400 llc_aw/w/b=107141/857128/107141
+[TB] heartbeat cycles=188000000 commit_pc=0xffffffff8011c292 next_pc=0xffffffff8011c2b0 llc_ar/r=197154/1577232 llc_aw/w/b=107265/858120/107264

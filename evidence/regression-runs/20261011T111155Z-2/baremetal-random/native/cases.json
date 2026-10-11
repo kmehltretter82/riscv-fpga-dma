@@ -1,0 +1,21 @@
+{
+  "count": 16,
+  "decouple": {
+    "all": 4,
+    "aw": 4,
+    "none": 4,
+    "rw": 4
+  },
+  "descriptor_hash": 2488553249,
+  "descriptor_hash_hex": "0x94544f21",
+  "destination_page_crossings": 6,
+  "final_rng_state": 3505315363,
+  "maximum_length": 3776,
+  "minimum_length": 2,
+  "one_d": 10,
+  "profile": "full",
+  "seed": 305419896,
+  "seed_hex": "0x12345678",
+  "source_page_crossings": 6,
+  "two_d": 6
+}

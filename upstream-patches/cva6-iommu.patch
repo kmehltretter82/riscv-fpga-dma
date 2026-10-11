@@ -1,0 +1,227 @@
+diff --git a/Makefile b/Makefile
+index 5a9ed64..8cf4379 100644
+--- a/Makefile
++++ b/Makefile
+@@ -129,7 +129,7 @@ CFLAGS += -I$(QUESTASIM_HOME)/include         \
+           -I$(RISCV)/include                  \
+           -I$(SPIKE_ROOT)/include             \
+           $(if $(DROMAJO), -I../corev_apu/tb/dromajo/src,) \
+-          -std=c++11 -I../corev_apu/tb/dpi -O3
++          -std=c++17 -I../corev_apu/tb/dpi -O3
+ 
+ ifdef XCELIUM_HOME
+ CFLAGS += -I$(XCELIUM_HOME)/tools/include
+@@ -598,10 +598,12 @@ verilate_command := $(verilator)
+                     $(if $(TRACE_FAST), --trace --no-trace-params $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp,)                  \
+                     -LDFLAGS "-L$(RISCV)/lib -L$(SPIKE_ROOT)/lib -Wl,-rpath,$(RISCV)/lib -Wl,-rpath,$(SPIKE_ROOT)/lib -lfesvr$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -L../corev_apu/tb/dromajo/src -ldromajo_cosim,) -lpthread $(if $(TRACE_COMPACT), -lz,)" \
+                     -CFLAGS "$(CFLAGS)$(if $(PROFILE), -g -pg,) $(if $(DROMAJO), -DDROMAJO=1,) -DVL_DEBUG"       \
++                    --timing                                                                                     \
++                    $(VERILATOR_EXTRA_ARGS)                                                                      \
+                     -Wall --cc  --vpi                                                                            \
+                     $(list_incdir) --top-module ariane_testharness                                               \
+ 					--threads-dpi none 																			 \
+-                    --Mdir $(ver-library) -O3                                                                    \
++                    --Mdir $(ver-library) $(if $(VERILATOR_OPT),$(VERILATOR_OPT),-O3)                            \
+                     --exe corev_apu/tb/ariane_tb.cpp corev_apu/tb/dpi/SimDTM.cc corev_apu/tb/dpi/SimJTAG.cc      \
+                     corev_apu/tb/dpi/remote_bitbang.cc corev_apu/tb/dpi/msim_helper.cc $(if $(DROMAJO), corev_apu/tb/dpi/dromajo_cosim_dpi.cc,)
+ 
+diff --git a/core/include/cv64a6_imafdc_sv39_config_pkg.sv b/core/include/cv64a6_imafdc_sv39_config_pkg.sv
+index f241d7d..28cbba2 100644
+--- a/core/include/cv64a6_imafdc_sv39_config_pkg.sv
++++ b/core/include/cv64a6_imafdc_sv39_config_pkg.sv
+@@ -12,16 +12,20 @@ package cva6_config_pkg;
+ 
+     localparam CVA6ConfigXlen = 64;
+ 
+-    localparam CVA6ConfigFpuEn = 1;
++    // The architectural IOMMU payload is rv64imac and never executes FP.
++    // Keep the CPU path small enough for a bounded host-side RTL build.
++    localparam CVA6ConfigFpuEn = 0;
+     localparam CVA6ConfigF16En = 0;
+     localparam CVA6ConfigF16AltEn = 0;
+     localparam CVA6ConfigF8En = 0;
+     localparam CVA6ConfigFVecEn = 0;
+ 
+-    localparam CVA6ConfigCvxifEn = 1;
++    localparam CVA6ConfigCvxifEn = 0;
+     localparam CVA6ConfigCExtEn = 1;
+     localparam CVA6ConfigAExtEn = 1;
+-    localparam CVA6ConfigHExtEn = 1; // hypervisor extension disabled by default
++    // The test framework resets H-extension state before exercising IOMMU
++    // guest-stage translation, so keep CPU H support in this model.
++    localparam CVA6ConfigHExtEn = 1;
+ 
+     localparam CVA6ConfigFetchUserEn = 0;
+     localparam CVA6ConfigFetchUserWidth = CVA6ConfigXlen;
+diff --git a/corev_apu/tb/ariane_peripherals.sv b/corev_apu/tb/ariane_peripherals.sv
+index 0c94f7c..7386e91 100644
+--- a/corev_apu/tb/ariane_peripherals.sv
++++ b/corev_apu/tb/ariane_peripherals.sv
+@@ -68,6 +68,7 @@ module ariane_peripherals #(
+ 
+     // Unused interrupt sources
+     assign irq_sources[ariane_soc::NumSources-1:ariane_soc::LastIntIndex+1] = '0;
++    assign irq_sources[7] = 1'b0;
+ 
+     REG_BUS #(
+         .ADDR_WIDTH ( 32 ),
+@@ -691,9 +692,12 @@ module ariane_peripherals #(
+ 			.axi_slave  		( dma_cfg          ),
+ 			// master port
+ 			.axi_master 		( idma_axi_master  ),
+-
+-            // IRQ
+-            .irq_o              ( irq_sources[7]   )
++				// The simulation harness has no Genesys 2 push buttons.
++				.btnu_i             ( 1'b0             ),
++				.btnd_i             ( 1'b0             ),
++				.btnl_i             ( 1'b0             ),
++				.btnr_i             ( 1'b0             ),
++				.btnc_i             ( 1'b0             )
+ 		);
+     end
+ 
+diff --git a/corev_apu/tb/ariane_soc_pkg.sv b/corev_apu/tb/ariane_soc_pkg.sv
+index 1590277..ed61e08 100644
+--- a/corev_apu/tb/ariane_soc_pkg.sv
++++ b/corev_apu/tb/ariane_soc_pkg.sv
+@@ -20,7 +20,11 @@ package ariane_soc;
+   // Number of interrupt wires used by IOMMU (1, 2, 4, 8, 16)
+   localparam int unsigned IOMMUNumWires = 4;
+   // Last used interrupt wire index
+-  localparam int unsigned LastIntIndex = 6 + IOMMUNumWires;
++  // Sources 0..6 are legacy peripherals, source 7 is reserved for iDMA,
++  // and the IOMMU WSI block occupies sources 8..(7 + IOMMUNumWires).
++  // The previous boundary left the highest IOMMU WSI multiply driven by the
++  // unused-source tie-off in ariane_peripherals.
++  localparam int unsigned LastIntIndex = 7 + IOMMUNumWires;
+ 
+   typedef enum int unsigned {
+     CVA6        = 0,
+diff --git a/corev_apu/tb/ariane_tb.cpp b/corev_apu/tb/ariane_tb.cpp
+index bcf93a5..d9c85de 100644
+--- a/corev_apu/tb/ariane_tb.cpp
++++ b/corev_apu/tb/ariane_tb.cpp
+@@ -16,6 +16,10 @@
+ // under the License.
+ 
+ #include "Variane_testharness.h"
++#include "Variane_testharness_ariane_testharness.h"
++#include "Variane_testharness_sram__N2000000.h"
++#include "Variane_testharness_tc_sram_wrapper__pi48.h"
++#include "Variane_testharness_tc_sram__N2000000_D40_NB1.h"
+ #include "verilator.h"
+ #include "verilated.h"
+ #if VM_TRACE_FST
+@@ -128,8 +132,9 @@ class preload_aware_dtm_t : public dtm_t {
+ int main(int argc, char **argv) {
+   std::clock_t c_start = std::clock();
+   auto t_start = std::chrono::high_resolution_clock::now();
+-  bool verbose;
+-  bool perf;
++  bool verbose = false;
++  bool perf = false;
++  bool timed_out = false;
+   unsigned random_seed = (unsigned)time(NULL) ^ (unsigned)getpid();
+   uint64_t max_cycles = -1;
+   int ret = 0;
+@@ -328,6 +333,10 @@ done_processing:
+ #endif
+ #endif
+ 
++  // Verilator evaluates combinational logic before reset has initialized the
++  // sequential state.  Suppress only those time-zero assertions; all RTL
++  // assertions are active again before the first non-reset cycle.
++  Verilated::assertOn(false);
+   for (int i = 0; i < 10; i++) {
+     top->rst_ni = 0;
+     top->clk_i = 0;
+@@ -346,10 +355,16 @@ done_processing:
+     main_time++;
+   }
+   top->rst_ni = 1;
++  Verilated::assertOn(true);
+ 
+   // Preload memory.
+   size_t mem_size = 0xFFFFFF;
+-  memif.read(0x80000000, mem_size, (void *)top->ariane_testharness__DOT__i_sram__DOT__gen_cut__BRA__0__KET____DOT__gen_mem__DOT__i_tc_sram_wrapper__DOT__i_tc_sram__DOT__sram);
++  auto *sram = top->__PVT__ariane_testharness
++                   ->__PVT__i_sram
++                   ->__PVT__gen_cut__BRA__0__KET____DOT__gen_mem__DOT__i_tc_sram_wrapper
++                   ->__PVT__i_tc_sram
++                   ->sram.data();
++  memif.read(0x80000000, mem_size, static_cast<void *>(sram));
+   // memif.read(0x84000000, mem_size, (void *)top->ariane_testharness__DOT__i_sram__DOT__gen_cut__BRA__0__KET____DOT__gen_mem__DOT__gen_mem_user__DOT__i_tc_sram_wrapper_user__DOT__i_tc_sram__DOT__sram);
+ 
+ #ifndef DROMAJO
+@@ -376,6 +391,14 @@ done_processing:
+       top->rtc_i ^= 1;
+     }
+     main_time++;
++#ifndef DROMAJO
++    if (main_time >= max_cycles && !dtm->done() && !jtag->done()) {
++      fprintf(stderr, "%s timed out after %ld cycles\n", htif_argv[1], main_time);
++      timed_out = true;
++      ret = 124;
++      break;
++    }
++#endif
+   }
+ 
+ #if VM_TRACE
+@@ -386,7 +409,9 @@ done_processing:
+ #endif
+ 
+ #ifndef DROMAJO
+-  if (dtm->exit_code()) {
++  if (timed_out) {
++    // The bounded-run diagnostic was printed at the point of timeout.
++  } else if (dtm->exit_code()) {
+     fprintf(stderr, "%s *** FAILED *** (code = %d) after %ld cycles\n", htif_argv[1], dtm->exit_code(), main_time);
+     ret = dtm->exit_code();
+   } else if (jtag->exit_code()) {
+diff --git a/corev_apu/tb/ariane_testharness.sv b/corev_apu/tb/ariane_testharness.sv
+index 7c1443e..5fa4e94 100644
+--- a/corev_apu/tb/ariane_testharness.sv
++++ b/corev_apu/tb/ariane_testharness.sv
+@@ -638,7 +638,9 @@ module ariane_testharness #(
+   // ---------------
+   ariane_axi_soc::req_t    axi_ariane_req;
+   ariane_axi_soc::resp_t   axi_ariane_resp;
++`ifdef RVFI_TRACE
+   ariane_rvfi_pkg::rvfi_port_t rvfi;
++`endif
+ 
+   ariane #(
+     .ArianeCfg  ( ariane_soc::ArianeSocCfg )
+@@ -685,7 +687,8 @@ module ariane_testharness #(
+     end
+   end
+ 
+-  rvfi_tracer  #(
++`ifdef RVFI_TRACE
++  rvfi_tracer #(
+     .HART_ID(hart_id),
+     .DEBUG_START(0),
+     .DEBUG_STOP(0)
+@@ -694,6 +697,7 @@ module ariane_testharness #(
+     .rst_ni(rst_ni),
+     .rvfi_i(rvfi)
+   );
++`endif
+ 
+ `ifdef AXI_SVA
+   // AXI 4 Assertion IP integration - You will need to get your own copy of this IP if you want
+diff --git a/vendor/pulp-platform/tech_cells_generic/src/rtl/tc_sram.sv b/vendor/pulp-platform/tech_cells_generic/src/rtl/tc_sram.sv
+index 2945fd4..48c1154 100644
+--- a/vendor/pulp-platform/tech_cells_generic/src/rtl/tc_sram.sv
++++ b/vendor/pulp-platform/tech_cells_generic/src/rtl/tc_sram.sv
+@@ -78,7 +78,7 @@ module tc_sram #(
+ );
+ 
+   // memory array
+-  data_t sram [NumWords-1:0];
++  data_t sram [NumWords-1:0] /* verilator public_flat_rw */;
+   // hold the read address when no read access is made
+   addr_t [NumPorts-1:0] r_addr_q;
+ 

@@ -1,0 +1,129 @@
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index f8e26c4bed2b..a8972bc22f64 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -370,6 +370,17 @@ config RISCV_NONSTANDARD_CACHE_OPS
+ 	  This enables function pointer support for non-standard noncoherent
+ 	  systems to handle cache management.
+ 
++config RISCV_CHESHIRE_CACHE_OPS
++	bool "Cheshire whole-cache DMA maintenance"
++	depends on MMU
++	select RISCV_DMA_NONCOHERENT
++	select RISCV_NONSTANDARD_CACHE_OPS
++	help
++	  Use CVA6's whole-cache FENCE behavior for noncoherent DMA on the
++	  ETH Zurich Cheshire platform.  This is an investigation-only bridge
++	  for configurations whose legacy write-back cache writes back and
++	  invalidates all lines when executing FENCE.
++
+ config AS_HAS_INSN
+ 	def_bool $(as-instr,.insn 0x100000f)
+ 
+diff --git a/arch/riscv/include/asm/dma-noncoherent.h b/arch/riscv/include/asm/dma-noncoherent.h
+index 312cfa0858fb..d0d22d42bfdb 100644
+--- a/arch/riscv/include/asm/dma-noncoherent.h
++++ b/arch/riscv/include/asm/dma-noncoherent.h
+@@ -7,6 +7,7 @@
+ #define __ASM_DMA_NONCOHERENT_H
+ 
+ #include <linux/dma-direct.h>
++#include <linux/init.h>
+ 
+ /*
+  * struct riscv_nonstd_cache_ops - Structure for non-standard CMO function pointers
+@@ -25,4 +26,11 @@ extern struct riscv_nonstd_cache_ops noncoherent_cache_ops;
+ 
+ void riscv_noncoherent_register_cache_ops(const struct riscv_nonstd_cache_ops *ops);
+ 
++#ifdef CONFIG_RISCV_CHESHIRE_CACHE_OPS
++void __init riscv_cheshire_cache_ops_init(void);
++unsigned long riscv_cheshire_cache_ops_count(void);
++#else
++static inline void riscv_cheshire_cache_ops_init(void) {}
++#endif
++
+ #endif	/* __ASM_DMA_NONCOHERENT_H */
+diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+index a32344bb220d..caff0e609a92 100644
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -28,6 +28,7 @@
+ #include <asm/alternative.h>
+ #include <asm/cacheflush.h>
+ #include <asm/cpufeature.h>
++#include <asm/dma-noncoherent.h>
+ #include <asm/early_ioremap.h>
+ #include <asm/pgtable.h>
+ #include <asm/setup.h>
+@@ -356,6 +357,7 @@ void __init setup_arch(char **cmdline_p)
+ 	apply_boot_alternatives();
+ 	init_rt_signal_env();
+ 
++	riscv_cheshire_cache_ops_init();
+ 	if (IS_ENABLED(CONFIG_RISCV_ISA_ZICBOM) &&
+ 	    riscv_isa_extension_available(NULL, ZICBOM))
+ 		riscv_noncoherent_supported();
+diff --git a/arch/riscv/mm/cache-ops.c b/arch/riscv/mm/cache-ops.c
+index a993ad11d0ec..f739fb0a0bed 100644
+--- a/arch/riscv/mm/cache-ops.c
++++ b/arch/riscv/mm/cache-ops.c
+@@ -4,6 +4,11 @@
+  */
+ 
+ #include <asm/dma-noncoherent.h>
++#include <asm/cacheflush.h>
++#include <asm/fence.h>
++#include <linux/atomic.h>
++#include <linux/init.h>
++#include <linux/of.h>
+ 
+ struct riscv_nonstd_cache_ops noncoherent_cache_ops __ro_after_init;
+ 
+@@ -15,3 +20,46 @@ riscv_noncoherent_register_cache_ops(const struct riscv_nonstd_cache_ops *ops)
+ 	noncoherent_cache_ops = *ops;
+ }
+ EXPORT_SYMBOL_GPL(riscv_noncoherent_register_cache_ops);
++
++#ifdef CONFIG_RISCV_CHESHIRE_CACHE_OPS
++static atomic_long_t cheshire_cache_op_count = ATOMIC_LONG_INIT(0);
++
++/*
++ * The legacy CVA6 write-back cache used by Cheshire treats every FENCE as a
++ * whole-cache flush.  ariane_pkg::INVALIDATE_ON_FLUSH is set, so the operation
++ * writes dirty lines back and invalidates all valid lines.  It cannot operate
++ * on a range; using it for all three DMA directions is conservative but gives
++ * Linux the cache contract that the noncoherent iDMA needs.
++ */
++static void cheshire_cache_flush_all(phys_addr_t paddr, size_t size)
++{
++	(void)paddr;
++	(void)size;
++	RISCV_FENCE(rw, rw);
++	atomic_long_inc(&cheshire_cache_op_count);
++}
++
++unsigned long riscv_cheshire_cache_ops_count(void)
++{
++	return atomic_long_read(&cheshire_cache_op_count);
++}
++EXPORT_SYMBOL_GPL(riscv_cheshire_cache_ops_count);
++
++static const struct riscv_nonstd_cache_ops cheshire_cache_ops __initconst = {
++	.wback = cheshire_cache_flush_all,
++	.inv = cheshire_cache_flush_all,
++	.wback_inv = cheshire_cache_flush_all,
++};
++
++void __init riscv_cheshire_cache_ops_init(void)
++{
++	if (!of_machine_is_compatible("eth,cheshire-dev"))
++		return;
++
++	/* Use the architecture's conservative DMA alignment, as T-Head CMO does. */
++	riscv_cbom_block_size = L1_CACHE_BYTES;
++	riscv_noncoherent_register_cache_ops(&cheshire_cache_ops);
++	riscv_noncoherent_supported();
++	pr_info("Cheshire whole-cache FENCE DMA maintenance enabled\n");
++}
++#endif

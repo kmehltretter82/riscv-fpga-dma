@@ -1,0 +1,13 @@
+[TB] loading CVA6 firmware: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh
+[TB] mode: seed=0x12345678 cases=16 skip=0 mask=0x00000000 jobs=16 profile=0 timing=2 timing_seed=0x8c032fc1 reset=0 read_error=0 write_error=0 error_job=0 error_burst=0 expected_hash=0x94544f21
+[TB] completion: value=0x524e444d00100000 completed=16 rc=0
+[TB] diagnostic: magic=0x524e4447 seed=0x12345678 requested=16 completed=16 index=16 kind=0 reason=0 conf=0x00000003 src=0x40003ff8 dst=0x40009ffe len=1025 src_stride=1025 dst_stride=1025 rows=1 hash=0x94544f21 rng=0xd0eede23
+[TB] DMA activity: jobs=16/16 busy_cycles=12621 ar=40 aw=40 r=2146 w=2145 b=40
+[TB] AXI errors: read=0 write=0 injected=0 addr=0x000000000000
+[TB] AXI wait cycles: aw=23626 w=40182 b=23555 ar=25063 r=35777
+[TB] CVA6+iDMA randomized campaign PASS
+- tb_cheshire_cva6_dma_random.sv:641: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.052 2026-09-05
+- Verilator: $finish at 6ms; walltime 15.709 s; speed 413.602 us/s
+- Verilator: cpu 15.709 s on 1 threads; allocated 10 MB
+random-cell command: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh +SEED=12345678 +CASES=16 +SKIP_CASES=0 +EXEC_MASK=00000000 +TIMING_SEED=8c032fc1 +EXPECT_HASH=94544f21 +TIMEOUT_CYCLES=84000000 +AXI_RANDOM

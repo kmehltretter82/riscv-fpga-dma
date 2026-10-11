@@ -1,0 +1,24 @@
+--- a/src/backend/idma_error_handler.sv
++++ b/src/backend/idma_error_handler.sv
+@@ -275,6 +275,21 @@
+                     w_dp_ready_o         = 1'b0;
+                     // go to wait state
+                     state_d              = WAIT;
++                end
++
++                // A software-requested abort may enter through the existing
++                // error-handler action port without a preceding AXI error.
++                // Accept it only when no terminal response won this cycle.
++                // The Cheshire phase driver exposes at most one request to
++                // hardware, making this an unambiguous active-transfer abort.
++                if (eh_valid_i && eh_i == idma_pkg::ABORT && !rsp_valid_o) begin
++                    eh_ready_o = 1'b1;
++                    if (num_outst_q == 'd1) begin
++                        rsp_last_d = w_super_last_i;
++                        state_d    = LEG_FLUSH;
++                    end
++                    assert (num_outst_q <= 'd1)
++                        else $error("software abort with multiple active transfers");
+                 end
+             end
+ 

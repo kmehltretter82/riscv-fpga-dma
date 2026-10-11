@@ -1,0 +1,22 @@
+--- a/hw/cheshire_idma_wrap.sv
++++ b/hw/cheshire_idma_wrap.sv
+@@ -296,7 +296,7 @@
+     .RAWCouplingAvail     ( RAWCouplingAvail),
+     .HardwareLegalizer    ( 1 ),
+     .RejectZeroTransfers  ( 1 ),
+-    .ErrorCap             ( idma_pkg::NO_ERROR_HANDLING ),
++    .ErrorCap             ( idma_pkg::ERROR_HANDLING ),
+     .PrintFifoInfo        ( 0 ),
+     .NumAxInFlight        ( NumAxInFlight ),
+     .MemSysDepth          ( MemSysDepth ),
+@@ -318,8 +318,8 @@
+     .idma_rsp_o       ( idma_rsp       ),
+     .rsp_valid_o      ( idma_rsp_valid ),
+     .rsp_ready_i      ( idma_rsp_ready ),
+-    .idma_eh_req_i    ( '0 ),
+-    .eh_req_valid_i   ( '0 ),
++    .idma_eh_req_i    ( idma_pkg::ABORT ),
++    .eh_req_valid_i   ( 1'b1 ),
+     .eh_req_ready_o   ( ),
+     .axi_read_req_o   ( axi_read_req ),
+     .axi_read_rsp_i   ( axi_read_rsp ),

@@ -1,0 +1,162 @@
+{
+  "duration_seconds": 7200.115573,
+  "finished_at": "2026-10-11T20:46:30.642908Z",
+  "gates": [
+    {
+      "actual": -15,
+      "allowed": [
+        0
+      ],
+      "gate": "exit_code",
+      "passed": false,
+      "timed_out": true
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^FPGA-LINUX-DMA-API-NEGATIVE-PASS$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^FPGA-LINUX-DMA-API-NEGATIVE: client pass=1 rc=0 cases=5 cleanup=5 errors=5 free_before=([0-9]+) free_after=\\1 cache_ops=[1-9][0-9]*$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 5,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "DMA-API: cheshire-idma-irq-investigation"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "device driver failed to check map error"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "device driver frees DMA memory with different size"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "device driver syncs DMA memory with different direction"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "device driver syncs DMA sg list with different entry count"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "device driver tries to free DMA memory it has not allocated"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-MAPPING-NEGATIVE-PASS cycles=[1-9][0-9]*$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] iDMA jobs=0/0 busy=0 ar=0 aw=0 r=0 w=0 b=0$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] error protocol responses=0 errors=0 aborts=0 read_slverr=0 write_slverr=0 read_decerr=0 write_decerr=0$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] IDs next_delta=0 done_delta=0 busy=0$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] CVA6 D-cache flushes=([1-9][0-9]*) acknowledgements=\\1$"
+    },
+    {
+      "actual": 0,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": false,
+      "pattern": "(?m)^\\[TB\\] IRQ completion cycles/rises/acks=0/0/0 error_rises=0 software_abort=0 post_terminal_writes=0$"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-MAPPING-FAIL:"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "timeout after [0-9]+ cycles"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "%Error"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Assertion failed"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "Kernel panic"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-MAPPING-DIRECT-PASS"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-MAPPING-SWIOTLB-PASS"
+    }
+  ],
+  "interrupted": false,
+  "phase": "linux-dma-api-negative",
+  "process_log": "process.log",
+  "returncode": -15,
+  "started_at": "2026-10-11T18:46:30.521023Z",
+  "status": "failed",
+  "timed_out": true
+}

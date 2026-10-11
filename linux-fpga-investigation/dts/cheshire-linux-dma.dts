@@ -1,0 +1,94 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <2>;
+	#size-cells = <2>;
+	compatible = "eth,cheshire-dev";
+	model = "ETH Zurich Cheshire (Verilator Linux DMA investigation)";
+
+	chosen {
+		stdout-path = "/soc/serial@3002000:1562500";
+		bootargs = "console=ttyS0,1562500 quiet loglevel=4 rdinit=/init dma_debug_entries=1024";
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		/* 32 MiB is sufficient for this minimal initramfs and bounds page init. */
+		reg = <0x0 0x80000000 0x0 0x02000000>;
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <1000000>;
+
+		CPU0: cpu@0 {
+			device_type = "cpu";
+			status = "okay";
+			compatible = "openhwgroup,cva6", "riscv";
+			clock-frequency = <50000000>;
+			reg = <0>;
+			riscv,isa = "rv64imafdc";
+			mmu-type = "riscv,sv39";
+
+			CPU0_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+	};
+
+	soc: soc {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "simple-bus";
+		ranges;
+
+		/*
+		 * This is an investigation-only binding for Cheshire's system
+		 * iDMA register frontend.  The locked RTL has no interrupt, so the
+		 * prototype Linux provider polls DONE_ID from a worker.
+		 *
+		 * The selected legacy CVA6 write-back cache writes back and invalidates
+		 * all L1 lines on FENCE.  The investigation kernel registers that whole-
+		 * cache operation with RISC-V's noncoherent DMA API.  Do not add
+		 * dma-coherent here: the iDMA has no hardware-coherent path into L1.
+		 */
+		idma: dma-controller@1000000 {
+			compatible = "pulp,cheshire-idma-v0";
+			reg = <0x0 0x01000000 0x0 0x1000>;
+			#dma-cells = <1>;
+			status = "okay";
+		};
+
+		serial@3002000 {
+			compatible = "ns16550a";
+			clock-frequency = <50000000>;
+			current-speed = <1562500>;
+			interrupt-parent = <&PLIC0>;
+			interrupts = <1>;
+			reg = <0x0 0x03002000 0x0 0x1000>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		clint@2040000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&CPU0_intc 3 &CPU0_intc 7>;
+			reg = <0x0 0x02040000 0x0 0x00040000>;
+		};
+
+		PLIC0: interrupt-controller@4000000 {
+			compatible = "riscv,plic0";
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+			interrupt-controller;
+			interrupts-extended = <&CPU0_intc 11 &CPU0_intc 9>;
+			riscv,max-priority = <7>;
+			riscv,ndev = <20>;
+			reg = <0x0 0x04000000 0x0 0x04000000>;
+		};
+	};
+};

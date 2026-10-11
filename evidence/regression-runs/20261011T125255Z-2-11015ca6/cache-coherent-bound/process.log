@@ -1,0 +1,7 @@
+[TB] cache contract: CVA6 WT plus iDMA drain/invalidate bridge
+[TB] loading OpenSBI+Linux payload: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh
+[TB] reset released
+[TB] heartbeat cycles=1 jobs=0/0 flush=0/0
+[2390000] %Fatal: tb_cheshire_linux_dma_coherent.sv:715: Assertion failed in tb_cheshire_linux_dma_coherent.boot: timeout after 100 cycles jobs=0/0
+%Error: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/rtl/tb_cheshire_linux_dma_coherent.sv:715: Verilog $stop
+Aborting...

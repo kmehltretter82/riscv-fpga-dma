@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/usr/bin/stdbuf",
+    "-oL",
+    "-eL",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/build/sim-coherent/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh",
+    "+MAX_CYCLES=100",
+    "+NO_DASM_TRACE"
+  ],
+  "argv_shell_quoted_for_display_only": "/usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/build/sim-coherent/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh +MAX_CYCLES=100 +NO_DASM_TRACE",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation",
+  "description": "Impossible 100-cycle CVA6-WT coherent control proving that coherent-cell completion fails closed.",
+  "environment_overrides": {},
+  "phase": "cache-coherent-bound",
+  "started_at": "2026-10-11T12:26:49.889650Z",
+  "timeout_seconds": 60
+}

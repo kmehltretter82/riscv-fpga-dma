@@ -1,0 +1,163 @@
+{
+  "captured_at": "2026-10-11T11:11:55.692020Z",
+  "phases": [
+    {
+      "phase": "baremetal-random",
+      "prerequisites": [
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791716545522261307,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/random_cell.py",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/random_cell.py",
+          "sha256": "41bc58632363eca3c702e299d4fbc316adc43f4c3f178075cb1c574707e98b8d",
+          "size": 5290
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791694108353991826,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/cases.py",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/cases.py",
+          "sha256": "1db5d977e7f3f0541de01a7b3f133bc90f248d34541d70213515a410066e62cf",
+          "size": 6356
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791697799546137730,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv",
+          "sha256": "ab0004516ce7f141279914ae5cacb4ce32c56381cafd2bd42cf7f34c9a86cf41",
+          "size": 2960136
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791697563095568458,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh",
+          "sha256": "9d4a8799f8d576a4b8c2d26edc25adfbfa0995ecd8910a7dcef7f9e1629f6308",
+          "size": 7970
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791696422442123017,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/sources-coupler-fix.f",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/sources-coupler-fix.f",
+          "sha256": "25a758a0b5b61f9501cc1e166662f7f3b65c6e4da1d42b1072f06b358ef1956d",
+          "size": 100207
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791697734571712455,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/idma-channel-coupler-credit.patch",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/idma-channel-coupler-credit.patch",
+          "sha256": "f68303e65819a0b2d6b30ce883981325e18079e31a6d42c0b6b7a8680b5270aa",
+          "size": 9795
+        }
+      ],
+      "revisions": [
+        {
+          "dirty": false,
+          "head": "292d2c091ffed3e194b0f437b5b3460813905e26",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire",
+          "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tracked_status": []
+        },
+        {
+          "dirty": false,
+          "head": "a6b1d6657c03998b6df0baf905d7babd006ba614",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/idma",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/idma",
+          "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tracked_status": []
+        }
+      ]
+    },
+    {
+      "phase": "baremetal-irq-abort",
+      "prerequisites": [
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791709892204205377,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/baremetal-irq-abort/simv",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/baremetal-irq-abort/simv",
+          "sha256": "3e48a738a41c0eb603aa5b1b0badcfa7246b4a72d793c5fe2f94834929b99524",
+          "size": 2925384
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791709860109681937,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh",
+          "sha256": "0bc2fc7e44f134efedcb8af9a6f7d2d23a54508f432c736b542441fccbb91fab",
+          "size": 2539
+        }
+      ],
+      "revisions": [
+        {
+          "dirty": false,
+          "head": "292d2c091ffed3e194b0f437b5b3460813905e26",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire",
+          "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tracked_status": []
+        },
+        {
+          "dirty": false,
+          "head": "a6b1d6657c03998b6df0baf905d7babd006ba614",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/idma",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/idma",
+          "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tracked_status": []
+        }
+      ]
+    },
+    {
+      "phase": "iommu-reference",
+      "prerequisites": [
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791716998907271536,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference",
+          "sha256": "6ba70e96a93d526e822da0afb1cabee7e9da6cdca7d5120d2ccaae9243ed8411",
+          "size": 595992
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791712310196248372,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/patches/iommu-ref-model-test-ub.patch",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/patches/iommu-ref-model-test-ub.patch",
+          "sha256": "5edc0bb38c88268bf2954053272ab30c6ab72e08ef3162d738e31aa60a8abb9a",
+          "size": 5046
+        }
+      ],
+      "revisions": [
+        {
+          "dirty": true,
+          "head": "875e15459ef7ac99dfd313b2a8c0a19dba742e59",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec",
+          "tracked_diff_sha256": "5edc0bb38c88268bf2954053272ab30c6ab72e08ef3162d738e31aa60a8abb9a",
+          "tracked_status": [
+            " M iommu_ref_model/test/test_app.c"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected": [
+    "baremetal-random",
+    "baremetal-irq-abort",
+    "iommu-reference"
+  ]
+}

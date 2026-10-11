@@ -1,0 +1,133 @@
+--- a/hw/cheshire_soc.sv
++++ b/hw/cheshire_soc.sv
+@@ -105,7 +105,24 @@
+   output logic [UsbNumPorts-1:0] usb_dm_oe_o,
+   input  logic [UsbNumPorts-1:0] usb_dp_i,
+   output logic [UsbNumPorts-1:0] usb_dp_o,
+-  output logic [UsbNumPorts-1:0] usb_dp_oe_o
++  output logic [UsbNumPorts-1:0] usb_dp_oe_o,
++  // Phase 11-only negative controls and bridge observability.
++  input  logic dma_coh_fault_skip_source_drain_i,
++  input  logic dma_coh_fault_drop_inval_i,
++  input  logic [5:0] dma_coh_fault_drop_index_i,
++  input  logic dma_coh_fault_hold_wbuffer_i,
++  input  logic [Cfg.AddrWidth-1:0] dma_coh_fault_hold_addr_i,
++  output logic dma_coh_pending_o,
++  output logic [31:0] dma_coh_source_drain_requests_o,
++  output logic [31:0] dma_coh_source_drain_acks_o,
++  output logic [31:0] dma_coh_quiesce_requests_o,
++  output logic [31:0] dma_coh_quiesce_acks_o,
++  output logic [31:0] dma_coh_accepted_write_lines_o,
++  output logic [31:0] dma_coh_inval_requests_o,
++  output logic [31:0] dma_coh_inval_acks_o,
++  output logic [31:0] dma_coh_dropped_invalidations_o,
++  output logic [31:0] dma_coh_delayed_b_responses_o,
++  output logic [31:0] dma_coh_completion_with_pending_o
+ );
+ 
+   `include "axi/typedef.svh"
+@@ -131,6 +148,12 @@
+   localparam int unsigned IntrRtdCoreBase = 1;
+   localparam int unsigned IntrRtdExtBase  = IntrRtdCoreBase + NumIntHarts;
+ 
++  logic dma_cache_quiesce_req;
++  logic [NumIntHarts-1:0] dma_cache_quiesce_ack;
++  logic [Cfg.AddrWidth-1:0] dma_cache_inval_addr;
++  logic dma_cache_inval_valid;
++  logic [NumIntHarts-1:0] dma_cache_inval_ready;
++
+   // This routable type is as wide or wider than all targets.
+   // It must be truncated before target connection.
+   typedef struct packed {
+@@ -588,6 +611,13 @@
+ 
+   localparam config_pkg::cva6_user_cfg_t Cva6Cfg = gen_cva6_cfg(Cfg);
+ 
++  initial begin
++    if (NumIntHarts != 1)
++      $fatal(1, "Phase 11 coherent iDMA cell is single-core only");
++    if (Cva6Cfg.DCacheType != config_pkg::WT)
++      $fatal(1, "Phase 11 coherent iDMA cell requires the CVA6 WT cache");
++  end
++
+   // Boot from boot ROM only if available, otherwise from platform ROM
+   localparam logic [63:0] BootAddr = 64'(Cfg.Bootrom ? BOOTROM_BASE_ADDR : Cfg.PlatformRom);
+ 
+@@ -660,6 +690,13 @@
+       .rvfi_probes_o    ( ),
+       .cvxif_req_o      ( ),
+       .cvxif_resp_i     ( '0 ),
++      .dma_cache_quiesce_req_i ( dma_cache_quiesce_req ),
++      .dma_cache_quiesce_ack_o ( dma_cache_quiesce_ack[i] ),
++      .dma_cache_inval_addr_i  ( 64'(dma_cache_inval_addr) ),
++      .dma_cache_inval_valid_i ( dma_cache_inval_valid ),
++      .dma_cache_inval_ready_o ( dma_cache_inval_ready[i] ),
++      .dma_cache_hold_wbuffer_i( dma_coh_fault_hold_wbuffer_i ),
++      .dma_cache_hold_addr_i   ( 64'(dma_coh_fault_hold_addr_i) ),
+       .noc_req_o        ( core_out_req ),
+       .noc_resp_i       ( core_out_rsp )
+     );
+@@ -1477,15 +1514,50 @@
+       .mst_resp_i ( dma_cut_rsp )
+     );
+ 
+-    axi_mst_req_t axi_dma_req;
++    axi_mst_req_t axi_dma_raw_req, axi_dma_coherent_req;
++    axi_mst_rsp_t axi_dma_raw_rsp;
+ 
+     always_comb begin
+-      axi_in_req[AxiIn.dma]         = axi_dma_req;
++      axi_in_req[AxiIn.dma]         = axi_dma_coherent_req;
+       axi_in_req[AxiIn.dma].aw.user = Cfg.AxiUserDefault;
+       axi_in_req[AxiIn.dma].w.user  = Cfg.AxiUserDefault;
+       axi_in_req[AxiIn.dma].ar.user = Cfg.AxiUserDefault;
+     end
+ 
++    phase11_wt_coherence_bridge #(
++      .AddrWidth ( Cfg.AddrWidth ),
++      .LineBytes ( Cva6Cfg.DcacheLineWidth / 8 ),
++      .MaxLines  ( 64 ),
++      .axi_req_t ( axi_mst_req_t ),
++      .axi_rsp_t ( axi_mst_rsp_t )
++    ) i_dma_coherence (
++      .clk_i,
++      .rst_ni,
++      .dma_req_i  ( axi_dma_raw_req ),
++      .dma_rsp_o  ( axi_dma_raw_rsp ),
++      .mem_req_o  ( axi_dma_coherent_req ),
++      .mem_rsp_i  ( axi_in_rsp[AxiIn.dma] ),
++      .cache_quiesce_req_o ( dma_cache_quiesce_req ),
++      .cache_quiesce_ack_i ( &dma_cache_quiesce_ack ),
++      .cache_inval_addr_o  ( dma_cache_inval_addr ),
++      .cache_inval_valid_o ( dma_cache_inval_valid ),
++      .cache_inval_ready_i ( &dma_cache_inval_ready ),
++      .fault_skip_source_drain_i ( dma_coh_fault_skip_source_drain_i ),
++      .fault_drop_inval_i        ( dma_coh_fault_drop_inval_i ),
++      .fault_drop_index_i        ( dma_coh_fault_drop_index_i ),
++      .pending_o                 ( dma_coh_pending_o ),
++      .source_drain_requests_o   ( dma_coh_source_drain_requests_o ),
++      .source_drain_acks_o       ( dma_coh_source_drain_acks_o ),
++      .quiesce_requests_o        ( dma_coh_quiesce_requests_o ),
++      .quiesce_acks_o            ( dma_coh_quiesce_acks_o ),
++      .accepted_write_lines_o    ( dma_coh_accepted_write_lines_o ),
++      .inval_requests_o          ( dma_coh_inval_requests_o ),
++      .inval_acks_o              ( dma_coh_inval_acks_o ),
++      .dropped_invalidations_o   ( dma_coh_dropped_invalidations_o ),
++      .delayed_b_responses_o     ( dma_coh_delayed_b_responses_o ),
++      .completion_with_pending_o ( dma_coh_completion_with_pending_o )
++    );
++
+     cheshire_idma_wrap #(
+       .AxiAddrWidth     ( Cfg.AddrWidth     ),
+       .AxiDataWidth     ( Cfg.AxiDataWidth  ),
+@@ -1505,8 +1577,8 @@
+       .clk_i,
+       .rst_ni,
+       .testmode_i     ( test_mode_i ),
+-      .axi_mst_req_o  ( axi_dma_req           ),
+-      .axi_mst_rsp_i  ( axi_in_rsp[AxiIn.dma] ),
++      .axi_mst_req_o  ( axi_dma_raw_req ),
++      .axi_mst_rsp_i  ( axi_dma_raw_rsp ),
+       .axi_slv_req_i  ( dma_cut_req ),
+       .axi_slv_rsp_o  ( dma_cut_rsp ),
+       .completion_irq_o ( intr.intn.dma_completion )

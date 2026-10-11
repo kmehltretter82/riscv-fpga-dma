@@ -1,0 +1,59 @@
+{
+  "auditor_sha256": "de685528a7c1275d94544e9158e1e572d066f816e27bcab4c79c24e00e996b20",
+  "finished_at": "2026-10-11T18:32:55.444871Z",
+  "interrupted": false,
+  "manifest": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/manifest.json",
+  "manifest_sha256": "a72893411e348d27a2ceb7def53863301fa404739d5aa3a4331bc1cc2652288f",
+  "results": [
+    {
+      "duration_seconds": 5.13159,
+      "finished_at": "2026-10-11T18:32:54.773104Z",
+      "gates": [
+        {
+          "actual": 1,
+          "allowed": [
+            1
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "timeout after 100 cycles; iDMA jobs=0/0 busy=0"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-API-NEGATIVE-PASS"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-MAPPING-NEGATIVE-PASS"
+        }
+      ],
+      "interrupted": false,
+      "phase": "linux-dma-api-negative-bound",
+      "process_log": "process.log",
+      "returncode": 1,
+      "started_at": "2026-10-11T18:32:49.640878Z",
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "run_id": "20261011-dma-api-negative-bound",
+  "runner_sha256": "107d87a49e255a132ebc07c5d2639c22ae076ed92997f0c2709099736cf93b67",
+  "schema_version": 1,
+  "selected": [
+    "linux-dma-api-negative-bound"
+  ],
+  "started_at": "2026-10-11T18:32:48.935596Z",
+  "status": "passed",
+  "verifier_sha256": "0500e07d0c8ba3bdeeb8caddb8ba44b105a6ad067a7e4a19c970fa9daa9a43a9"
+}

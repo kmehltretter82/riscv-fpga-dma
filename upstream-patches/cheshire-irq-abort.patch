@@ -1,0 +1,308 @@
+diff --git a/hw/cheshire_idma_wrap.sv b/hw/cheshire_idma_wrap.sv
+index eb005fe..7d9accb 100644
+--- a/hw/cheshire_idma_wrap.sv
++++ b/hw/cheshire_idma_wrap.sv
+@@ -30,7 +30,8 @@ module cheshire_idma_wrap #(
+   output axi_mst_req_t  axi_mst_req_o,
+   input  axi_mst_rsp_t  axi_mst_rsp_i,
+   input  axi_slv_req_t  axi_slv_req_i,
+-  output axi_slv_rsp_t  axi_slv_rsp_o
++  output axi_slv_rsp_t  axi_slv_rsp_o,
++  output logic          completion_irq_o
+ );
+ 
+   `include "axi/assign.svh"
+@@ -81,8 +82,8 @@ module cheshire_idma_wrap #(
+     axi_write_meta_channel_t axi;
+   } write_meta_channel_t;
+ 
+-  dma_regs_req_t dma_reg_req;
+-  dma_regs_rsp_t dma_reg_rsp;
++  dma_regs_req_t dma_reg_req, dma_frontend_req;
++  dma_regs_rsp_t dma_reg_rsp, dma_frontend_rsp;
+ 
+   // 1D FE signals
+   idma_req_t    burst_req_d;
+@@ -106,13 +107,27 @@ module cheshire_idma_wrap #(
+   logic         be_valid;
+   logic         be_ready;
+   idma_rsp_t    idma_rsp;
++  idma_rsp_t    idma_nd_rsp;
+   logic         idma_rsp_valid;
+   logic         idma_rsp_ready;
++  logic         idma_rsp_sink_ready;
++  logic         idma_rsp_forward_valid;
++  logic         idma_eh_req_valid;
++  logic         idma_eh_req_ready;
+ 
+   // ID signals
+   logic              issue_id;
+   logic              retire_id;
+   logic [IdCounterWidth-1:0] done_id, next_id;
++  logic [IdCounterWidth-1:0] irq_ack_id;
++  logic irq_initialized;
++
++  // Phase-only control and observability signals.  The generated register
++  // frontend decodes eight address bits; offset 0x100 is intercepted before
++  // it can alias CONF at 0x00 and is ABORT_STATUS in this variant.
++  logic abort_reg_sel, abort_write, done_id_read;
++  logic sw_abort_pending, sw_abort_accepted;
++  logic abort_protocol_error_q, abort_noop_q;
+ 
+   // Status signals
+   idma_pkg::idma_busy_t busy;
+@@ -144,6 +159,56 @@ module cheshire_idma_wrap #(
+     .busy_o     ( )
+    );
+ 
++  always_comb begin
++    dma_frontend_req = dma_reg_req;
++    dma_reg_rsp = dma_frontend_rsp;
++    abort_reg_sel = dma_reg_req.valid &&
++                    (dma_reg_req.addr[11:0] == 12'h100);
++    abort_write = 1'b0;
++    if (abort_reg_sel) begin
++      dma_frontend_req.valid = 1'b0;
++      dma_reg_rsp.ready = 1'b1;
++      dma_reg_rsp.error = dma_reg_req.write && !dma_reg_req.wstrb[0];
++      dma_reg_rsp.rdata = {
++        61'b0, (next_id != done_id + 1'b1), (|busy), sw_abort_pending
++      };
++      abort_write = dma_reg_req.write && dma_reg_req.wstrb[0] &&
++                    dma_reg_req.wdata[0];
++    end
++  end
++
++  assign done_id_read = dma_reg_req.valid && !dma_reg_req.write &&
++                        (dma_reg_req.addr[11:0] == 12'h084) &&
++                        dma_reg_rsp.ready;
++  assign completion_irq_o = irq_initialized && (done_id != irq_ack_id);
++
++  always_ff @(posedge clk_i or negedge rst_ni) begin
++    if (!rst_ni) begin
++      irq_ack_id <= '0;
++      irq_initialized <= 1'b0;
++      sw_abort_pending <= 1'b0;
++      abort_protocol_error_q <= 1'b0;
++      abort_noop_q <= 1'b0;
++    end else begin
++      if (!irq_initialized) begin
++        irq_ack_id <= done_id;
++        irq_initialized <= 1'b1;
++      end else if (done_id_read) begin
++        irq_ack_id <= done_id;
++      end
++      if (abort_write) begin
++        if (sw_abort_pending)
++          abort_protocol_error_q <= 1'b1;
++        else if (next_id != done_id + 1'b1)
++          sw_abort_pending <= 1'b1;
++        else
++          abort_noop_q <= 1'b1;
++      end
++      if (sw_abort_accepted)
++        sw_abort_pending <= 1'b0;
++    end
++  end
++
+   if (!IsTwoD) begin : gen_1d
+ 
+     idma_reg64_1d #(
+@@ -156,15 +221,15 @@ module cheshire_idma_wrap #(
+     ) i_dma_frontend_1d (
+       .clk_i,
+       .rst_ni,
+-      .dma_ctrl_req_i ( dma_reg_req ),
+-      .dma_ctrl_rsp_o ( dma_reg_rsp ),
++      .dma_ctrl_req_i ( dma_frontend_req ),
++      .dma_ctrl_rsp_o ( dma_frontend_rsp ),
+       .dma_req_o      ( burst_req_d ),
+       .req_valid_o    ( be_valid_d  ),
+       .req_ready_i    ( be_ready_d  ),
+       .next_id_i      ( next_id ),
+       .stream_idx_o   ( ),
+       .done_id_i      ( done_id ),
+-      .busy_i         ( idma_busy ),
++      .busy_i         ( busy ),
+       .midend_busy_i  ( 1'b0 )
+     );
+ 
+@@ -186,9 +251,9 @@ module cheshire_idma_wrap #(
+       .ready_i    ( be_ready  )
+     );
+ 
+-    assign retire_id = idma_rsp_valid & idma_rsp_ready;
++    assign retire_id = idma_rsp_valid & idma_rsp_ready & !idma_rsp.error;
+     assign issue_id  = be_valid_d & be_ready_d;
+-    assign idma_rsp_ready = 1'b1;
++    assign idma_rsp_sink_ready = 1'b1;
+ 
+     idma_transfer_id_gen #(
+       .IdWidth ( IdCounterWidth )
+@@ -212,8 +277,8 @@ module cheshire_idma_wrap #(
+     ) idma_frontend_2d (
+       .clk_i,
+       .rst_ni,
+-      .dma_ctrl_req_i ( dma_reg_req   ),
+-      .dma_ctrl_rsp_o ( dma_reg_rsp   ),
++      .dma_ctrl_req_i ( dma_frontend_req   ),
++      .dma_ctrl_rsp_o ( dma_frontend_rsp   ),
+       .dma_req_o      ( idma_nd_req_d ),
+       .req_valid_o    ( idma_nd_req_valid_d ),
+       .req_ready_i    ( idma_nd_req_ready_d ),
+@@ -255,19 +320,19 @@ module cheshire_idma_wrap #(
+       .nd_req_i           ( idma_nd_req       ),
+       .nd_req_valid_i     ( idma_nd_req_valid ),
+       .nd_req_ready_o     ( idma_nd_req_ready ),
+-      .nd_rsp_o           ( ),
++      .nd_rsp_o           ( idma_nd_rsp ),
+       .nd_rsp_valid_o     ( idma_nd_rsp_valid ),
+       .nd_rsp_ready_i     ( idma_nd_rsp_ready ),
+       .burst_req_o        ( burst_req ),
+       .burst_req_valid_o  ( be_valid  ),
+       .burst_req_ready_i  ( be_ready  ),
+       .burst_rsp_i        ( idma_rsp       ),
+-      .burst_rsp_valid_i  ( idma_rsp_valid ),
+-      .burst_rsp_ready_o  ( idma_rsp_ready ),
++      .burst_rsp_valid_i  ( idma_rsp_forward_valid ),
++      .burst_rsp_ready_o  ( idma_rsp_sink_ready ),
+       .busy_o             ( me_busy )
+     );
+ 
+-    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready;
++    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready & !idma_nd_rsp.error;
+     assign issue_id  = idma_nd_req_valid_d & idma_nd_req_ready_d;
+     assign idma_nd_rsp_ready = 1'b1;
+ 
+@@ -284,6 +349,69 @@ module cheshire_idma_wrap #(
+ 
+   end
+ 
++  // The error handler uses a request/response protocol: accept the error
++  // notification, stop consuming responses while submitting the selected
++  // action, then resume the response channel for transfer completion.
++  typedef enum logic [1:0] {
++    EhAcceptRsp,
++    EhSendAction,
++    EhWaitCompletion
++  } eh_state_t;
++  eh_state_t eh_state_d, eh_state_q;
++  logic eh_sw_abort_d, eh_sw_abort_q;
++
++  always_comb begin
++    eh_state_d = eh_state_q;
++    eh_sw_abort_d = eh_sw_abort_q;
++    idma_rsp_ready = 1'b0;
++    idma_rsp_forward_valid = 1'b0;
++    idma_eh_req_valid = 1'b0;
++    sw_abort_accepted = 1'b0;
++    unique case (eh_state_q)
++      EhAcceptRsp: begin
++        idma_rsp_ready = idma_rsp_sink_ready;
++        idma_rsp_forward_valid = idma_rsp_valid;
++        if (idma_rsp_valid && idma_rsp_ready && idma_rsp.error) begin
++          eh_sw_abort_d = 1'b0;
++          eh_state_d = EhSendAction;
++        end else if (!idma_rsp_valid && sw_abort_pending) begin
++          eh_sw_abort_d = 1'b1;
++          eh_state_d = EhSendAction;
++        end
++      end
++      EhSendAction: begin
++        idma_eh_req_valid = 1'b1;
++        if (idma_eh_req_ready) begin
++          sw_abort_accepted = eh_sw_abort_q;
++          eh_state_d = EhWaitCompletion;
++        end
++      end
++      EhWaitCompletion: begin
++        idma_rsp_ready = idma_rsp_sink_ready;
++        idma_rsp_forward_valid = idma_rsp_valid;
++        if (idma_rsp_valid && idma_rsp_ready) begin
++          if (idma_rsp.error)
++            eh_state_d = EhSendAction;
++          else begin
++            eh_sw_abort_d = 1'b0;
++            eh_state_d = EhAcceptRsp;
++          end
++        end
++      end
++      default: eh_state_d = EhAcceptRsp;
++    endcase
++  end
++
++  always_ff @(posedge clk_i or negedge rst_ni) begin
++    if (!rst_ni) begin
++      eh_state_q <= EhAcceptRsp;
++      eh_sw_abort_q <= 1'b0;
++    end else begin
++      eh_state_q <= eh_state_d;
++      eh_sw_abort_q <= eh_sw_abort_d;
++    end
++  end
++
+   idma_backend_rw_axi #(
+     .CombinedShifter      ( 1'b0 ),
+     .DataWidth            ( AxiDataWidth ),
+@@ -296,7 +424,7 @@ module cheshire_idma_wrap #(
+     .RAWCouplingAvail     ( RAWCouplingAvail),
+     .HardwareLegalizer    ( 1 ),
+     .RejectZeroTransfers  ( 1 ),
+-    .ErrorCap             ( idma_pkg::NO_ERROR_HANDLING ),
++    .ErrorCap             ( idma_pkg::ERROR_HANDLING ),
+     .PrintFifoInfo        ( 0 ),
+     .NumAxInFlight        ( NumAxInFlight ),
+     .MemSysDepth          ( MemSysDepth ),
+@@ -318,9 +446,9 @@ module cheshire_idma_wrap #(
+     .idma_rsp_o       ( idma_rsp       ),
+     .rsp_valid_o      ( idma_rsp_valid ),
+     .rsp_ready_i      ( idma_rsp_ready ),
+-    .idma_eh_req_i    ( '0 ),
+-    .eh_req_valid_i   ( '0 ),
+-    .eh_req_ready_o   ( ),
++    .idma_eh_req_i    ( idma_pkg::ABORT ),
++    .eh_req_valid_i   ( idma_eh_req_valid ),
++    .eh_req_ready_o   ( idma_eh_req_ready ),
+     .axi_read_req_o   ( axi_read_req ),
+     .axi_read_rsp_i   ( axi_read_rsp ),
+     .axi_write_req_o  ( axi_write_req ),
+diff --git a/hw/cheshire_pkg.sv b/hw/cheshire_pkg.sv
+index 87c6174..823c933 100644
+--- a/hw/cheshire_pkg.sv
++++ b/hw/cheshire_pkg.sv
+@@ -244,6 +244,8 @@ package cheshire_pkg;
+     logic i2c_fmt_overflow;
+     logic i2c_rx_threshold;
+     logic i2c_fmt_threshold;
++    logic dma_error;
++    logic dma_completion;
+     logic uart;
+     logic zero;
+   } cheshire_int_intr_t;
+diff --git a/hw/cheshire_soc.sv b/hw/cheshire_soc.sv
+index 2868f11..eec35c0 100644
+--- a/hw/cheshire_soc.sv
++++ b/hw/cheshire_soc.sv
+@@ -1508,7 +1508,8 @@ module cheshire_soc import cheshire_pkg::*; #(
+       .axi_mst_req_o  ( axi_dma_req           ),
+       .axi_mst_rsp_i  ( axi_in_rsp[AxiIn.dma] ),
+       .axi_slv_req_i  ( dma_cut_req ),
+-      .axi_slv_rsp_o  ( dma_cut_rsp )
++      .axi_slv_rsp_o  ( dma_cut_rsp ),
++      .completion_irq_o ( intr.intn.dma_completion )
+     );
+ 
+     if (Cfg.BusErr) begin : gen_dma_bus_err
+@@ -1542,6 +1543,12 @@ module cheshire_soc import cheshire_pkg::*; #(
+     assign intr.intn.bus_err.dma = '0;
+   end
+ 
++  assign intr.intn.dma_error = |intr.intn.bus_err.dma;
++
++  if (!Cfg.Dma) begin : gen_dma_completion_irq_tie
++    assign intr.intn.dma_completion = 1'b0;
++  end
++
+   ///////////////////
+   //  Serial Link  //
+   ///////////////////

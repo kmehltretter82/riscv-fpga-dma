@@ -1,0 +1,113 @@
+--- a/core/cva6.sv
++++ b/core/cva6.sv
+@@ -345,6 +345,17 @@
+     output cvxif_req_t cvxif_req_o,
+     // CVXIF response - SUBSYSTEM
+     input cvxif_resp_t cvxif_resp_i,
++    // Phase 11 iDMA coherence interface.  The acknowledgement includes a
++    // drained WT write buffer and no outstanding cache transaction.
++    input logic dma_cache_quiesce_req_i,
++    output logic dma_cache_quiesce_ack_o,
++    input logic [63:0] dma_cache_inval_addr_i,
++    input logic dma_cache_inval_valid_i,
++    output logic dma_cache_inval_ready_o,
++    // Test-only stale-source control.  While asserted, a write-back from the
++    // WT buffer to this one cache line is backpressured at the core AXI port.
++    input logic dma_cache_hold_wbuffer_i,
++    input logic [63:0] dma_cache_hold_addr_i,
+     // noc request, can be AXI or OpenPiton - SUBSYSTEM
+     output noc_req_t noc_req_o,
+     // noc response, can be AXI or OpenPiton - SUBSYSTEM
+@@ -689,6 +700,9 @@
+   logic [63:0] inval_addr;
+   logic inval_valid;
+   logic inval_ready;
++  logic [63:0] coherent_inval_addr;
++  logic coherent_inval_valid;
++  logic coherent_inval_ready;
+ 
+   always_ff @(posedge clk_i or negedge rst_ni) begin
+     if (~rst_ni) begin
+@@ -1417,6 +1431,38 @@
+   end
+ 
+   if (CVA6Cfg.DCacheType == config_pkg::WT) begin : gen_cache_wt
++    noc_req_t wt_noc_req;
++    noc_resp_t wt_noc_resp;
++    logic hold_wbuffer_write;
++
++    // iDMA has priority over the optional accelerator invalidation source.
++    // The focused Cheshire cell disables the accelerator, but retaining the
++    // arbitration here makes ownership explicit and prevents a double drive.
++    assign coherent_inval_valid = dma_cache_inval_valid_i | inval_valid;
++    assign coherent_inval_addr = dma_cache_inval_valid_i ?
++                                 dma_cache_inval_addr_i : inval_addr;
++    assign dma_cache_inval_ready_o = coherent_inval_ready & !inval_valid;
++    assign inval_ready = coherent_inval_ready & !dma_cache_inval_valid_i;
++    assign dma_cache_quiesce_ack_o = dma_cache_quiesce_req_i &&
++                                     !busy_cache_ctrl &&
++                                     dcache_commit_wbuffer_empty;
++    assign hold_wbuffer_write = dma_cache_hold_wbuffer_i &&
++                                wt_noc_req.aw_valid &&
++                                (wt_noc_req.aw.addr >> 4) ==
++                                  (dma_cache_hold_addr_i >> 4);
++    // Keep the real WT-buffer entry resident for the stale-source negative.
++    // AW cannot handshake while held, so its paired W channel is safe to
++    // backpressure using the same address comparison.
++    always_comb begin : gate_test_wbuffer_write
++      noc_req_o = wt_noc_req;
++      wt_noc_resp = noc_resp_i;
++      if (hold_wbuffer_write) begin
++        noc_req_o.aw_valid = 1'b0;
++        noc_req_o.w_valid = 1'b0;
++        wt_noc_resp.aw_ready = 1'b0;
++        wt_noc_resp.w_ready = 1'b0;
++      end
++    end
+     // this is a cache subsystem that is compatible with OpenPiton
+     wt_cache_subsystem #(
+         .CVA6Cfg   (CVA6Cfg),
+@@ -1436,7 +1482,7 @@
+         .clk_i             (clk_i),
+         .rst_ni            (rst_uarch_n),
+         .busy_o            (busy_cache_ctrl),
+-        .stall_i           (stall_ctrl_cache),
++        .stall_i           (stall_ctrl_cache | dma_cache_quiesce_req_i),
+         .init_ni           (init_ctrl_cache_n),
+         // I$
+         .icache_en_i       (icache_en_csr),
+@@ -1462,11 +1508,11 @@
+         .wbuffer_empty_o   (dcache_commit_wbuffer_empty),
+         .wbuffer_not_ni_o  (dcache_commit_wbuffer_not_ni),
+         // memory side
+-        .noc_req_o         (noc_req_o),
+-        .noc_resp_i        (noc_resp_i),
+-        .inval_addr_i      (inval_addr),
+-        .inval_valid_i     (inval_valid),
+-        .inval_ready_o     (inval_ready)
++        .noc_req_o         (wt_noc_req),
++        .noc_resp_i        (wt_noc_resp),
++        .inval_addr_i      (coherent_inval_addr),
++        .inval_valid_i     (coherent_inval_valid),
++        .inval_ready_o     (coherent_inval_ready)
+     );
+   end else if (
+         CVA6Cfg.DCacheType == config_pkg::HPDCACHE_WT ||
+@@ -1538,6 +1584,8 @@
+         .noc_resp_i(noc_resp_i)
+     );
+     assign inval_ready = 1'b1;
++    assign dma_cache_quiesce_ack_o = 1'b0;
++    assign dma_cache_inval_ready_o = 1'b0;
+   end else begin : gen_cache_wb
+     std_cache_subsystem #(
+         // note: this only works with one cacheable region
+@@ -1593,6 +1641,8 @@
+     );
+     assign dcache_commit_wbuffer_not_ni = 1'b1;
+     assign inval_ready                  = 1'b1;
++    assign dma_cache_quiesce_ack_o      = 1'b0;
++    assign dma_cache_inval_ready_o      = 1'b0;
+   end
+ 
+   // ----------------

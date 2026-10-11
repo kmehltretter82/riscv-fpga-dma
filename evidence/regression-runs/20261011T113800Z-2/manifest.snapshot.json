@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "name": "Cheshire RISC-V DMA regression",
+  "default_tier": "baremetal-ci",
+  "tiers": {
+    "baremetal-ci": [
+      "baremetal-random",
+      "baremetal-irq-abort",
+      "iommu-reference"
+    ],
+    "baremetal-error": [
+      "baremetal-error-drain"
+    ],
+    "linux": [
+      "linux-baseline",
+      "linux-axi-errors",
+      "linux-dmaengine"
+    ],
+    "iommu-rtl": [
+      "iommu-bound-control",
+      "iommu-architecture"
+    ],
+    "mapping": [
+      "linux-mapping-direct",
+      "linux-mapping-swiotlb"
+    ],
+    "cache": [
+      "cache-legacy-bound",
+      "cache-legacy-negative",
+      "cache-hpd-bound",
+      "cache-hpdcache"
+    ],
+    "ready-all": [
+      "baremetal-random",
+      "baremetal-irq-abort",
+      "iommu-reference",
+      "baremetal-error-drain",
+      "linux-baseline",
+      "linux-axi-errors",
+      "linux-dmaengine",
+      "iommu-bound-control",
+      "iommu-architecture",
+      "linux-mapping-direct",
+      "linux-mapping-swiotlb",
+      "cache-legacy-bound",
+      "cache-legacy-negative",
+      "cache-hpd-bound",
+      "cache-hpdcache"
+    ],
+    "planned": [
+      "cache-coherent"
+    ]
+  },
+  "phases": {
+    "baremetal-random": {
+      "status": "ready",
+      "description": "One deterministic 16-descriptor randomized CVA6+iDMA cell using the tested channel-coupler credit backport.",
+      "timeout_seconds": 300,
+      "cwd": "{dma_root}/cheshire-random-vlt",
+      "argv": [
+        "{python}",
+        "{regression_root}/adapters/random_cell.py",
+        "--sim", "{dma_root}/cheshire-random-vlt/build-random-coupler-fix-final/simv",
+        "--memh", "{dma_root}/cheshire-random-vlt/fw/dma_random_test.memh",
+        "--cases", "{dma_root}/cheshire-random-vlt/cases.py",
+        "--result-dir", "{phase_dir}/native",
+        "--seed", "0x12345678",
+        "--count", "16",
+        "--timing", "random",
+        "--scenario", "clean",
+        "--timeout-cycles", "84000000"
+      ],
+      "requires": [
+        {"path": "{regression_root}/adapters/random_cell.py", "kind": "file", "nonempty": true},
+        {"path": "{dma_root}/cheshire-random-vlt/cases.py", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/cheshire-random-vlt/build-random-coupler-fix-final/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/cheshire-random-vlt/fw/dma_random_test.memh", "kind": "file", "nonempty": true},
+        {"path": "{dma_root}/cheshire-random-vlt/sources-coupler-fix.f", "kind": "file", "nonempty": true},
+        {"path": "{dma_root}/cheshire-random-vlt/idma-channel-coupler-credit.patch", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^\\[TB\\] CVA6\\+iDMA randomized campaign PASS$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] completion: .* completed=16 rc=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] diagnostic: .*seed=0x12345678 requested=16 completed=16 .*hash=0x94544f21(?: .*)?$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] DMA activity: jobs=16/16 ", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] AXI errors: read=0 write=0 injected=0 addr=0x[0-9a-f]+$", "exact": 1}
+        ],
+        "forbid": [
+          "CVA6 random DMA firmware failed",
+          "Verilog \\$stop",
+          "Assertion failed"
+        ]
+      }
+    },
+    "baremetal-irq-abort": {
+      "status": "ready",
+      "description": "Focused completion-IRQ, software-abort, terminal-drain, and clean-recovery proof.",
+      "timeout_seconds": 120,
+      "cwd": "{dma_root}/linux-driver-investigation",
+      "argv": [
+        "{dma_root}/linux-driver-investigation/build/baremetal-irq-abort/simv",
+        "+MEMH={dma_root}/linux-driver-investigation/baremetal/dma_irq_abort_test.memh"
+      ],
+      "requires": [
+        {"path": "{dma_root}/linux-driver-investigation/build/baremetal-irq-abort/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-driver-investigation/baremetal/dma_irq_abort_test.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^\\[TB\\] CVA6\\+iDMA IRQ-abort PASS$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] DMA activity: jobs=2/2 ", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IRQ/abort: irq_cycles=(?:[2-9][0-9]|[1-9][0-9]{2,}) rises=2 acks=2 abort_accepts=1 post_terminal_writes=0 protocol_error=0 noop=0$", "exact": 1}
+        ],
+        "forbid": [
+          "Verilog \\$stop",
+          "Assertion failed"
+        ]
+      }
+    },
+    "iommu-reference": {
+      "status": "ready",
+      "description": "One complete run of the patched 30-test ratified-spec IOMMU C reference model.",
+      "timeout_seconds": 60,
+      "cwd": "{dma_root}/sources/riscv-iommu-spec/iommu_ref_model/test",
+      "argv": [
+        "{dma_root}/iommu-investigation/build/iommu-reference"
+      ],
+      "requires": [
+        {"path": "{dma_root}/iommu-investigation/build/iommu-reference", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/iommu-investigation/patches/iommu-ref-model-test-ub.patch", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/sources/riscv-iommu-spec"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^Test [0-9]{2} : .*: PASS$", "exact": 30},
+          {"pattern": "(?m)^Test 30 : Big endian model .*: PASS$", "exact": 1}
+        ],
+        "forbid": [
+          "(?m)^Test [0-9]{2} : .*: FAIL$",
+          "AddressSanitizer",
+          "runtime error:"
+        ]
+      }
+    },
+    "baremetal-error-drain": {
+      "status": "ready",
+      "description": "Twelve focused iDMA read/write SLVERR burst-position and latency-drain cases.",
+      "timeout_seconds": 900,
+      "cwd": "{dma_root}/cheshire-error-vlt",
+      "argv": [
+        "{python}",
+        "{regression_root}/adapters/error_matrix.py",
+        "--sim", "{dma_root}/cheshire-error-vlt/build-autoabort-drain/simv",
+        "--memh", "{dma_root}/cheshire-error-vlt/fw/dma_error_test.memh",
+        "--result-dir", "{phase_dir}/native"
+      ],
+      "requires": [
+        {"path": "{regression_root}/adapters/error_matrix.py", "kind": "file", "nonempty": true},
+        {"path": "{dma_root}/cheshire-error-vlt/build-autoabort-drain/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/cheshire-error-vlt/fw/dma_error_test.memh", "kind": "file", "nonempty": true},
+        {"path": "{dma_root}/cheshire-error-vlt/idma-error-drain.patch", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^PASS stall[01]-(?:read|write)-burst[012]$", "exact": 12},
+          {"pattern": "(?m)^PASS: 12/12 read/write burst-position and latency cases$", "exact": 1}
+        ],
+        "forbid": [
+          "adapter failure:",
+          "Verilog \\$stop",
+          "Assertion failed"
+        ]
+      }
+    },
+    "linux-baseline": {
+      "status": "ready",
+      "description": "Linux DMAengine/dmatest baseline with eight copies and balanced noncoherent cache operations.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-fpga-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-fpga-investigation/build/sim-no-trace/simv",
+        "+MEMH={dma_root}/linux-fpga-investigation/out/fw_payload.memh",
+        "+MAX_CYCLES=200000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-fpga-investigation/build/sim-no-trace/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-fpga-investigation/out/fw_payload.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma",
+        "{dma_root}/linux-fpga-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-PASS cycles=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=8/8 busy=[1-9][0-9]* ar=[1-9][0-9]* aw=[1-9][0-9]* r=[1-9][0-9]* w=[1-9][0-9]* b=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] CVA6 D-cache flushes=([0-9]+) acknowledgements=\\1$", "exact": 1}
+        ],
+        "forbid": [
+          "timeout after [0-9]+ cycles",
+          "Verilog \\$stop",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "linux-axi-errors": {
+      "status": "ready",
+      "description": "Linux-visible read/write SLVERR and DECERR classification, completion, drain, and recovery.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-error-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-error-investigation/build/sim-error/simv",
+        "+MEMH={dma_root}/linux-error-investigation/out/fw_payload.memh",
+        "+MAX_CYCLES=200000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-error-investigation/build/sim-error/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-error-investigation/out/fw_payload.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma",
+        "{dma_root}/linux-error-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-ERROR-PASS cycles=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=9/9 ", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] error protocol responses=13 errors=4 aborts=4 read_slverr=1 write_slverr=1 read_decerr=1 write_decerr=1$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] BusErr pushes=4 pops=4 full_cycles=0 irq=00$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IDs next_delta=9 done_delta=9 busy=0$", "exact": 1}
+        ],
+        "forbid": [
+          "timeout after [0-9]+ cycles",
+          "Verilog \\$stop",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "linux-dmaengine": {
+      "status": "ready",
+      "description": "Full DMAengine IRQ, queue, concurrency, residue, error, terminate, abort, and recovery matrix.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-driver-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-driver-investigation/build/sim-irq/simv",
+        "+MEMH={dma_root}/linux-driver-investigation/out/fw_payload.memh",
+        "+MAX_CYCLES=200000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-driver-investigation/build/sim-irq/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-driver-investigation/out/fw_payload.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma",
+        "{dma_root}/linux-driver-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-IRQ-PASS cycles=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=67/67 ", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] error protocol responses=71 errors=4 aborts=5 read_slverr=1 write_slverr=1 read_decerr=1 write_decerr=1$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] BusErr pushes=4 pops=4 full_cycles=0 irq=00$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IDs next_delta=67 done_delta=67 busy=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] CVA6 D-cache flushes=216 acknowledgements=216$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IRQ completion cycles/rises/acks=[1-9][0-9]*/67/67 error_rises=4 software_abort=1 post_terminal_writes=0$", "exact": 1}
+        ],
+        "forbid": [
+          "timeout after [0-9]+ cycles",
+          "Verilog \\$stop",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "iommu-bound-control": {
+      "status": "ready",
+      "description": "Negative control proving that the CVA6/IOMMU model's internal cycle bound fails closed.",
+      "timeout_seconds": 60,
+      "cwd": "{dma_root}/iommu-investigation",
+      "argv": [
+        "{dma_root}/sources/cva6-iommu/work-ver/Variane_testharness",
+        "--max-cycles=100",
+        "{dma_root}/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf"
+      ],
+      "requires": [
+        {"path": "{dma_root}/sources/cva6-iommu/work-ver/Variane_testharness", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/sources/cva6-iommu",
+        "{dma_root}/sources/riscv-iommu-tests"
+      ],
+      "gates": {
+        "allowed_exit_codes": [124],
+        "require": [
+          {"pattern": "timed out after 100 cycles", "exact": 1}
+        ],
+        "forbid": [
+          "Summary: passed",
+          " completed after "
+        ]
+      }
+    },
+    "iommu-architecture": {
+      "status": "ready",
+      "description": "Supported CVA6 RTL IOMMU translation, invalidation, WSI/MSI, fault, and HPM architecture tests.",
+      "timeout_seconds": 1200,
+      "cwd": "{dma_root}/iommu-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/sources/cva6-iommu/work-ver/Variane_testharness",
+        "--max-cycles=20000000",
+        "--cycle-count",
+        "{dma_root}/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/sources/cva6-iommu/work-ver/Variane_testharness", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/sources/cva6-iommu",
+        "{dma_root}/sources/riscv-iommu-tests"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "Summary: passed 38 of 38", "exact": 1},
+          {"pattern": "You can close the test!", "exact": 1},
+          {"pattern": " completed after [1-9][0-9]* cycles", "exact": 1}
+        ],
+        "forbid": [
+          "Summary: failed",
+          "ERROR:",
+          "timed out after",
+          "\\*\\*\\* FAILED \\*\\*\\*"
+        ]
+      }
+    },
+    "linux-mapping-direct": {
+      "status": "ready",
+      "description": "Direct streaming, SG, coherent-allocation, non-page-aligned, and boundary-crossing map coverage.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-mapping-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-mapping-investigation/build/sim-mapping/simv",
+        "+MEMH={dma_root}/linux-mapping-investigation/out/fw_payload-direct.memh",
+        "+MAX_CYCLES=250000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-mapping-investigation/build/sim-mapping/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-mapping-investigation/out/fw_payload-direct.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma",
+        "{dma_root}/linux-mapping-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^FPGA-LINUX-DMA-MAPPING-DIRECT-PASS$", "exact": 1},
+          {"pattern": "(?m)^FPGA-LINUX-DMA-MAPPING: client pass=1 rc=0 force=0 jobs=272 callbacks=272 .* proofs=540 bounce_checks=0 cache_before=1 cache_ops=814 dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-MAPPING-PASS cycles=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=272/272 busy=[1-9][0-9]* ar=[1-9][0-9]* aw=[1-9][0-9]* r=[1-9][0-9]* w=[1-9][0-9]* b=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] error protocol responses=272 errors=0 aborts=0 read_slverr=0 write_slverr=0 read_decerr=0 write_decerr=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IDs next_delta=272 done_delta=272 busy=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] CVA6 D-cache flushes=([0-9]+) acknowledgements=\\1$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IRQ completion cycles/rises/acks=[1-9][0-9]*/272/272 error_rises=0 software_abort=0 post_terminal_writes=0$", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-MAPPING-FAIL:",
+          "timeout after [0-9]+ cycles",
+          "Verilog \\$stop",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "linux-mapping-swiotlb": {
+      "status": "ready",
+      "description": "Forced SWIOTLB/bounce variant of the Linux mapping matrix.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-mapping-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-mapping-investigation/build/sim-mapping/simv",
+        "+MEMH={dma_root}/linux-mapping-investigation/out/fw_payload-swiotlb.memh",
+        "+MAX_CYCLES=250000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-mapping-investigation/build/sim-mapping/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-mapping-investigation/out/fw_payload-swiotlb.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/cheshire",
+        "{dma_root}/idma",
+        "{dma_root}/linux-mapping-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^FPGA-LINUX-DMA-MAPPING-SWIOTLB-PASS$", "exact": 1},
+          {"pattern": "(?m)^FPGA-LINUX-DMA-MAPPING: client pass=1 rc=0 force=1 jobs=271 callbacks=271 .* proofs=538 bounce_checks=269 cache_before=1 cache_ops=811 dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-MAPPING-PASS cycles=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=271/271 busy=[1-9][0-9]* ar=[1-9][0-9]* aw=[1-9][0-9]* r=[1-9][0-9]* w=[1-9][0-9]* b=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] error protocol responses=271 errors=0 aborts=0 read_slverr=0 write_slverr=0 read_decerr=0 write_decerr=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IDs next_delta=271 done_delta=271 busy=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] CVA6 D-cache flushes=([0-9]+) acknowledgements=\\1$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] IRQ completion cycles/rises/acks=[1-9][0-9]*/271/271 error_rises=0 software_abort=0 post_terminal_writes=0$", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-MAPPING-FAIL:",
+          "timeout after [0-9]+ cycles",
+          "Verilog \\$stop",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "cache-legacy-bound": {
+      "status": "ready",
+      "description": "Impossible 100-cycle legacy-WB control proving that cache-cell completion fails closed.",
+      "timeout_seconds": 60,
+      "cwd": "{dma_root}/linux-cache-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-cache-investigation/build/sim-legacy/simv",
+        "+MEMH={dma_root}/linux-cache-investigation/out/fw_payload-legacy.memh",
+        "+MAX_CYCLES=100",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-cache-investigation/build/sim-legacy/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-cache-investigation/out/fw_payload-legacy.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/linux-cache-investigation/sources/cheshire-irq",
+        "{dma_root}/linux-cache-investigation/sources/idma-abort",
+        "{dma_root}/linux-cache-investigation/sources/cva6-no-trace",
+        "{dma_root}/linux-cache-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [1],
+        "require": [
+          {"pattern": "timeout after 100 cycles jobs=0/0", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-CACHE-PASS"
+        ]
+      }
+    },
+    "cache-legacy-negative": {
+      "status": "ready",
+      "description": "Legacy CVA6 WB positive copy plus stale-source and stale-destination negative controls.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-cache-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-cache-investigation/build/sim-legacy/simv",
+        "+MEMH={dma_root}/linux-cache-investigation/out/fw_payload-legacy.memh",
+        "+MAX_CYCLES=200000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-cache-investigation/build/sim-legacy/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-cache-investigation/out/fw_payload-legacy.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/linux-cache-investigation/sources/cheshire-irq",
+        "{dma_root}/linux-cache-investigation/sources/idma-abort",
+        "{dma_root}/linux-cache-investigation/sources/cva6-no-trace",
+        "{dma_root}/linux-cache-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^FPGA-LINUX-DMA-CACHE-PASS cell=legacy-wb-noncoherent$", "exact": 1},
+          {"pattern": "(?m)^PHASE11_LINUX_RECORD cell=legacy-wb-noncoherent .* dma_api_errors=0$", "exact": 3},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=legacy-wb-noncoherent run=positive .* observed_outcome=new_src .* hpd_flush_inval_all=0 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=legacy-wb-noncoherent run=stale-source .* observed_outcome=old_src .* hpd_flush_inval_all=0 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=legacy-wb-noncoherent run=stale-destination .* observed_outcome=old_dst .* hpd_flush_inval_all=0 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=3/3 ar=[1-9][0-9]* aw=[1-9][0-9]* r=96 w=96 b=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-CACHE-PASS cell=legacy-wb-noncoherent cycles=[1-9][0-9]*$", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-CACHE-FAIL:",
+          "timeout after [0-9]+ cycles",
+          "%Error",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "cache-hpd-bound": {
+      "status": "ready",
+      "description": "Impossible 100-cycle HPDcache-WB control proving that cache-cell completion fails closed.",
+      "timeout_seconds": 60,
+      "cwd": "{dma_root}/linux-cache-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-cache-investigation/build/sim-hpd/simv",
+        "+MEMH={dma_root}/linux-cache-investigation/out/fw_payload-hpd.memh",
+        "+MAX_CYCLES=100",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-cache-investigation/build/sim-hpd/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-cache-investigation/out/fw_payload-hpd.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/linux-cache-investigation/sources/cheshire-irq",
+        "{dma_root}/linux-cache-investigation/sources/idma-abort",
+        "{dma_root}/linux-cache-investigation/sources/cva6-no-trace",
+        "{dma_root}/linux-cache-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [1],
+        "require": [
+          {"pattern": "timeout after 100 cycles jobs=0/0", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-CACHE-PASS"
+        ]
+      }
+    },
+    "cache-hpdcache": {
+      "status": "ready",
+      "description": "Corrected HPDcache-WB positive copy plus stale-source and stale-destination negative controls.",
+      "timeout_seconds": 7200,
+      "cwd": "{dma_root}/linux-cache-investigation",
+      "argv": [
+        "/usr/bin/stdbuf", "-oL", "-eL",
+        "{dma_root}/linux-cache-investigation/build/sim-hpd/simv",
+        "+MEMH={dma_root}/linux-cache-investigation/out/fw_payload-hpd.memh",
+        "+MAX_CYCLES=200000000",
+        "+NO_DASM_TRACE"
+      ],
+      "requires": [
+        {"command": "stdbuf"},
+        {"path": "{dma_root}/linux-cache-investigation/build/sim-hpd/simv", "kind": "file", "executable": true, "nonempty": true},
+        {"path": "{dma_root}/linux-cache-investigation/out/fw_payload-hpd.memh", "kind": "file", "nonempty": true}
+      ],
+      "revision_roots": [
+        "{dma_root}/linux-cache-investigation/sources/cheshire-irq",
+        "{dma_root}/linux-cache-investigation/sources/idma-abort",
+        "{dma_root}/linux-cache-investigation/sources/cva6-no-trace",
+        "{dma_root}/linux-cache-investigation/sources/linux-cheshire-cache"
+      ],
+      "gates": {
+        "allowed_exit_codes": [0],
+        "require": [
+          {"pattern": "(?m)^FPGA-LINUX-DMA-CACHE-PASS cell=hpdcache-wb-noncoherent$", "exact": 1},
+          {"pattern": "(?m)^PHASE11_LINUX_RECORD cell=hpdcache-wb-noncoherent .* dma_api_errors=0$", "exact": 3},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=hpdcache-wb-noncoherent run=positive .* observed_outcome=new_src .* hpd_flush_inval_all=3 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=hpdcache-wb-noncoherent run=stale-source .* observed_outcome=old_src .* hpd_flush_inval_all=3 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] PHASE11_RECORD cell=hpdcache-wb-noncoherent run=stale-destination .* observed_outcome=old_dst .* hpd_flush_inval_all=3 hpd_flush_only=0 .* dma_api_errors=0$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] iDMA jobs=3/3 ar=[1-9][0-9]* aw=[1-9][0-9]* r=96 w=96 b=[1-9][0-9]*$", "exact": 1},
+          {"pattern": "(?m)^\\[TB\\] FPGA-LINUX-DMA-CACHE-PASS cell=hpdcache-wb-noncoherent cycles=[1-9][0-9]*$", "exact": 1}
+        ],
+        "forbid": [
+          "FPGA-LINUX-DMA-CACHE-FAIL:",
+          "timeout after [0-9]+ cycles",
+          "%Error",
+          "Assertion failed",
+          "Kernel panic"
+        ]
+      }
+    },
+    "cache-coherent": {
+      "status": "planned",
+      "description": "A genuinely coherent DMA configuration with deliberate stale-data controls.",
+      "reason": "The WT invalidation bridge passes static controls, but locked CVA6/Cheshire still lacks the cache-quiesce and external-invalidation wiring needed for a runtime-coherent cell."
+    }
+  }
+}

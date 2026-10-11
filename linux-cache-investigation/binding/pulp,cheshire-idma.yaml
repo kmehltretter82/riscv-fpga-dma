@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/dma/pulp,cheshire-idma.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: PULP Cheshire system iDMA investigation interface
+
+description: |
+  Temporary binding for the Cheshire iDMA v0.6.4 Linux investigation RTL.
+  The first register range contains the generated iDMA frontend plus a
+  phase-only ABORT_STATUS register at offset 0x100. Reading DONE_ID at offset
+  0x84 acknowledges the level completion interrupt. The second range is the
+  Cheshire UNBENT DMA bus-error recorder. This ABI has not been proposed for
+  upstream use.
+
+maintainers:
+  - Karl Mehltretter <kmehltretter@gmail.com>
+
+allOf:
+  - $ref: dma-controller.yaml#
+
+properties:
+  compatible:
+    const: pulp,cheshire-idma-v0.6.4-test
+
+  reg:
+    minItems: 2
+    maxItems: 2
+
+  reg-names:
+    items:
+      - const: control
+      - const: bus-error
+
+  interrupts:
+    minItems: 2
+    maxItems: 2
+
+  interrupt-names:
+    items:
+      - const: completion
+      - const: error
+
+  dma-channels:
+    const: 1
+
+  "#dma-cells":
+    description: The only valid channel selector is zero.
+    const: 1
+
+required:
+  - compatible
+  - reg
+  - reg-names
+  - interrupts
+  - interrupt-names
+  - dma-channels
+  - "#dma-cells"
+
+unevaluatedProperties: false
+
+examples:
+  - |
+    dma-controller@1000000 {
+        compatible = "pulp,cheshire-idma-v0.6.4-test";
+        reg = <0x01000000 0x1000>, <0x03009040 0x40>;
+        reg-names = "control", "bus-error";
+        interrupts = <2>, <3>;
+        interrupt-names = "completion", "error";
+        dma-channels = <1>;
+        #dma-cells = <1>;
+    };
+...

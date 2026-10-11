@@ -1,0 +1,11 @@
+[TB] cache contract: legacy WB, FENCE writes back and invalidates
+[TB] loading OpenSBI+Linux payload: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-negative.memh
+[TB] payload load complete; waiting 20 clocks before reset release
+[TB] reset released
+[TB] UART divisor-minus-one changed at cycle=1: 0x0000
+[TB] heartbeat cycles=1 commit_pc=0x0000000000000000 next_pc=0x0000000000000000 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[TB] first platform-ROM fetch at cycle=3 next_pc=0x0000000080000000
+[TB] heartbeat cycles=10 commit_pc=0x0000000000000000 next_pc=0x0000000080000000 llc_ar/r=0/0 llc_aw/w/b=0/0/0
+[2390000] %Fatal: tb_cheshire_linux_dma_mapping.sv:717: Assertion failed in tb_cheshire_linux_dma_mapping.boot: timeout after 100 cycles; iDMA jobs=0/0 busy=0
+%Error: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/rtl/tb_cheshire_linux_dma_mapping.sv:717: Verilog $stop
+Aborting...

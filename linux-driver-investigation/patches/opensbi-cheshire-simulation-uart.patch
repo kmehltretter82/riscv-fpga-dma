@@ -1,0 +1,14 @@
+diff --git a/platform/fpga/cheshire/platform.c b/platform/fpga/cheshire/platform.c
+index 418fe15..43e5752 100644
+--- a/platform/fpga/cheshire/platform.c
++++ b/platform/fpga/cheshire/platform.c
+@@ -20,7 +20,8 @@
+ 
+ #define CHESHIRE_UART_ADDR	      0x03002000
+ #define CHESHIRE_UART_FREQ	      50000000
+-#define CHESHIRE_UART_BAUDRATE	      115200
++/* Simulation payload: fastest usable divisor (2) at the 50 MHz UART clock. */
++#define CHESHIRE_UART_BAUDRATE	      1562500
+ #define CHESHIRE_UART_REG_SHIFT	      2
+ #define CHESHIRE_UART_REG_WIDTH	      4
+ #define CHESHIRE_UART_REG_OFFSET      0

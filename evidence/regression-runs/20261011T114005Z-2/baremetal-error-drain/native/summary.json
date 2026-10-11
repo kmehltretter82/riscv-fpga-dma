@@ -1,0 +1,138 @@
+{
+  "passed": 12,
+  "expected": 12,
+  "rows": [
+    {
+      "stall": 0,
+      "channel": "read",
+      "burst": 0,
+      "returncode": 0,
+      "prefix": 8,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 0,
+      "channel": "read",
+      "burst": 1,
+      "returncode": 0,
+      "prefix": 2056,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 0,
+      "channel": "read",
+      "burst": 2,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 0,
+      "channel": "write",
+      "burst": 0,
+      "returncode": 0,
+      "prefix": 2088,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 0,
+      "channel": "write",
+      "burst": 1,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 0,
+      "channel": "write",
+      "burst": 2,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "read",
+      "burst": 0,
+      "returncode": 0,
+      "prefix": 8,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "read",
+      "burst": 1,
+      "returncode": 0,
+      "prefix": 2056,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "read",
+      "burst": 2,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "write",
+      "burst": 0,
+      "returncode": 0,
+      "prefix": 2064,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "write",
+      "burst": 1,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    },
+    {
+      "stall": 1,
+      "channel": "write",
+      "burst": 2,
+      "returncode": 0,
+      "prefix": 4097,
+      "backend_rsp": 3,
+      "backend_err": 1,
+      "done": 3,
+      "next": 4
+    }
+  ]
+}

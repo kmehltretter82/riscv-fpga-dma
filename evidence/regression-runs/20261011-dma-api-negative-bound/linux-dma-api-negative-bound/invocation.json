@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/stdbuf",
+    "-oL",
+    "-eL",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/build/sim-mapping/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-negative.memh",
+    "+MAX_CYCLES=100",
+    "+NO_DASM_TRACE",
+    "+NEGATIVE"
+  ],
+  "argv_shell_quoted_for_display_only": "/usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/build/sim-mapping/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-negative.memh +MAX_CYCLES=100 +NO_DASM_TRACE +NEGATIVE",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation",
+  "description": "Impossible 100-cycle control proving that the deliberate DMA-API misuse cell fails closed.",
+  "environment_overrides": {},
+  "phase": "linux-dma-api-negative-bound",
+  "started_at": "2026-10-11T18:32:49.640878Z",
+  "timeout_seconds": 60
+}

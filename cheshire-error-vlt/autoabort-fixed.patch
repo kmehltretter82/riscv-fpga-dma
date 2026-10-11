@@ -1,0 +1,57 @@
+--- a/hw/cheshire_idma_wrap.sv
++++ b/hw/cheshire_idma_wrap.sv
+@@ -106,6 +106,7 @@
+   logic         be_valid;
+   logic         be_ready;
+   idma_rsp_t    idma_rsp;
++  idma_rsp_t    idma_nd_rsp;
+   logic         idma_rsp_valid;
+   logic         idma_rsp_ready;
+ 
+@@ -186,7 +187,7 @@
+       .ready_i    ( be_ready  )
+     );
+ 
+-    assign retire_id = idma_rsp_valid & idma_rsp_ready;
++    assign retire_id = idma_rsp_valid & idma_rsp_ready & !idma_rsp.error;
+     assign issue_id  = be_valid_d & be_ready_d;
+     assign idma_rsp_ready = 1'b1;
+ 
+@@ -255,7 +256,7 @@
+       .nd_req_i           ( idma_nd_req       ),
+       .nd_req_valid_i     ( idma_nd_req_valid ),
+       .nd_req_ready_o     ( idma_nd_req_ready ),
+-      .nd_rsp_o           ( ),
++      .nd_rsp_o           ( idma_nd_rsp ),
+       .nd_rsp_valid_o     ( idma_nd_rsp_valid ),
+       .nd_rsp_ready_i     ( idma_nd_rsp_ready ),
+       .burst_req_o        ( burst_req ),
+@@ -267,7 +268,7 @@
+       .busy_o             ( me_busy )
+     );
+ 
+-    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready;
++    assign retire_id = idma_nd_rsp_valid & idma_nd_rsp_ready & !idma_nd_rsp.error;
+     assign issue_id  = idma_nd_req_valid_d & idma_nd_req_ready_d;
+     assign idma_nd_rsp_ready = 1'b1;
+ 
+@@ -296,7 +297,7 @@
+     .RAWCouplingAvail     ( RAWCouplingAvail),
+     .HardwareLegalizer    ( 1 ),
+     .RejectZeroTransfers  ( 1 ),
+-    .ErrorCap             ( idma_pkg::NO_ERROR_HANDLING ),
++    .ErrorCap             ( idma_pkg::ERROR_HANDLING ),
+     .PrintFifoInfo        ( 0 ),
+     .NumAxInFlight        ( NumAxInFlight ),
+     .MemSysDepth          ( MemSysDepth ),
+@@ -318,8 +319,8 @@
+     .idma_rsp_o       ( idma_rsp       ),
+     .rsp_valid_o      ( idma_rsp_valid ),
+     .rsp_ready_i      ( idma_rsp_ready ),
+-    .idma_eh_req_i    ( '0 ),
+-    .eh_req_valid_i   ( '0 ),
++    .idma_eh_req_i    ( idma_pkg::ABORT ),
++    .eh_req_valid_i   ( 1'b1 ),
+     .eh_req_ready_o   ( ),
+     .axi_read_req_o   ( axi_read_req ),
+     .axi_read_rsp_i   ( axi_read_rsp ),

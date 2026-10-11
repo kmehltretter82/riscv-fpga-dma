@@ -1,0 +1,30 @@
+Test 01 : All inbound transactions disallowed      : [32mPASS[0m
+Test 02 : Bare mode tests                          : [32mPASS[0m
+Test 03 : Too wide device_id                       : [32mPASS[0m
+Test 04 : Non-leaf DDTE invalid                    : [32mPASS[0m
+Test 05 : NL-DDT access viol & data corruption     : [32mPASS[0m
+Test 06 : Non-leaf DDTE reserved bits              : [32mPASS[0m
+Test 07 : Fault queue overflow and memory fault    : [32mPASS[0m
+Test 08 : Device context invalid                   : [32mPASS[0m
+Test 09 : Device context misconfigured             : [32mPASS[0m
+Test 10 : Unsupported transaction type             : [32mPASS[0m
+Test 11 : Dev. ctx. access viol & data corruption  : [32mPASS[0m
+Test 12 : Device context invalidation              : [32mPASS[0m
+Test 13 : IOFENCE                                  : [32mPASS[0m
+Test 14 : G-stage translation sizes                : [32mPASS[0m
+Test 15 : G-stage permission faults                : [32mPASS[0m
+Test 16 : IOTINVAL.GVMA                            : [32mPASS[0m
+Test 17 : S-stage translation sizes                : [32mPASS[0m
+Test 18 : S-stage permission faults                : [32mPASS[0m
+Test 19 : IOTINVAL.VMA                             : [32mPASS[0m
+Test 20 : HPM filtering                            : [32mPASS[0m
+Test 21 : Process Directory Table walk             : [32mPASS[0m
+Test 22 : ATS page request group response          : [32mPASS[0m
+Test 23 : ATS page request                         : [32mPASS[0m
+Test 24 : ATS inval request                        : [32mPASS[0m
+Test 25 : MSI write-through mode                   : [32mPASS[0m
+Test 26 : MSI MFIF mode                            : [32mPASS[0m
+Test 27 : Illegal commands and CQ mem faults       : [32mPASS[0m
+Test 28 : Sv32 mode                                : [32mPASS[0m
+Test 29 : Misc. Register Access tests              : [32mPASS[0m
+Test 30 : Big endian model                         : [32mPASS[0m

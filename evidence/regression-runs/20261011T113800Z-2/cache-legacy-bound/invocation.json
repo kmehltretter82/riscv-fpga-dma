@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/usr/bin/stdbuf",
+    "-oL",
+    "-eL",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-legacy/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-legacy.memh",
+    "+MAX_CYCLES=100",
+    "+NO_DASM_TRACE"
+  ],
+  "argv_shell_quoted_for_display_only": "/usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-legacy/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-legacy.memh +MAX_CYCLES=100 +NO_DASM_TRACE",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation",
+  "description": "Impossible 100-cycle legacy-WB control proving that cache-cell completion fails closed.",
+  "environment_overrides": {},
+  "phase": "cache-legacy-bound",
+  "started_at": "2026-10-11T11:38:02.234295Z",
+  "timeout_seconds": 60
+}

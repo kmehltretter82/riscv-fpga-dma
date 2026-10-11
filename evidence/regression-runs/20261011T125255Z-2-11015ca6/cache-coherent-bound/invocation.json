@@ -1,0 +1,28 @@
+{
+  "adopted_at": "2026-10-11T12:52:57.241063Z",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation",
+  "declared_argv": [
+    "/usr/bin/stdbuf",
+    "-oL",
+    "-eL",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/build/sim-coherent/simv",
+    "+MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh",
+    "+MAX_CYCLES=100",
+    "+NO_DASM_TRACE"
+  ],
+  "mode": "adopted_completed_direct_run",
+  "source_command": "scripts/run-bound-control.sh",
+  "source_exit": {
+    "mtime_ns": 1791721430051949337,
+    "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/coherent-bound-100.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "size": 2
+  },
+  "source_log": {
+    "mtime_ns": 1791721429987939415,
+    "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/coherent-bound-100.log",
+    "sha256": "f7e24d9696313ce1ecbace59b200d8f282ec8a8180295cd1e3db7ae38f2f979b",
+    "size": 568
+  },
+  "timeout_seconds": 60
+}

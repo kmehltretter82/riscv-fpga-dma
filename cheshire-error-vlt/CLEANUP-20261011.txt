@@ -1,0 +1,19 @@
+RISC-V error-campaign post-seal cleanup, 2026-10-11 UTC
+Only rebuildable Verilator outputs, traces and Bender caches were removed.
+Retained sources, locks, patches, harness, toolchain and checksum-sealed evidence.
+
+Deleted paths:
+415420510	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire/.bender
+224968598	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/idma/.bender
+259415078	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-production
+259400966	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-naive
+259401641	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-fixed
+259414285	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-handshake
+259446837	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-drain
+12969780	/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/trace_hart_0.dasm
+measured_total_bytes	1950437695
+free_before_bytes	154977767424
+evidence_manifest_sha256	bf3cd38102ce5071c9e8ceee029400e1db88125c31fad0f1518f880d795395ed
+evidence_path	/home/karl/linux-work/dmadebug2/hwtest/riscv-cheshire-cva6-dma-errors-20261011
+free_after_bytes	156975357952
+all_paths_absent	1

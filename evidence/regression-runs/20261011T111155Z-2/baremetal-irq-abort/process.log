@@ -1,0 +1,13 @@
+[TB] loading CVA6 firmware: /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh
+[TB] mode: firmware=0 axi_stalls=0 read_error=0 write_error=0 error_burst=0
+[TB] completion: value=0x4552524401400000 prefix=320 rc=0
+[TB] DMA activity: jobs=2/2 busy_cycles=4156 ar=17 aw=17 r=4129 w=4129 b=17 backend_rsp=2 backend_err=0
+[TB] AXI errors: read=0 write=0 injected=0 addr=0x000000000000
+[TB] AXI wait cycles: aw=0 w=0 b=0 ar=0 r=1
+[TB] IDs: done=3 next=4
+[TB] IRQ/abort: irq_cycles=95 rises=2 acks=2 abort_accepts=1 post_terminal_writes=0 protocol_error=0 noop=0
+[TB] CVA6+iDMA IRQ-abort PASS
+- /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/tb_cheshire_dma_irq_abort.sv:527: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.052 2026-09-05
+- Verilator: $finish at 11ms; walltime 27.321 s; speed 386.540 us/s
+- Verilator: cpu 27.305 s on 1 threads; allocated 18 MB

@@ -1,0 +1,36 @@
+Selected phases: baremetal-random, baremetal-irq-abort, iommu-reference, baremetal-error-drain, linux-baseline, linux-axi-errors, linux-dmaengine, iommu-bound-control, iommu-architecture, linux-mapping-direct, linux-mapping-swiotlb, cache-legacy-bound, cache-legacy-negative, cache-hpd-bound, cache-hpdcache, cache-coherent-bound, cache-coherent
+  baremetal-random: timeout=300s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt
+    /usr/bin/python3 /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/random_cell.py --sim /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/build-random-coupler-fix-final/simv --memh /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/fw/dma_random_test.memh --cases /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-random-vlt/cases.py --result-dir /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T140241Z-10-f7b1de26/baremetal-random/native --seed 0x12345678 --count 16 --timing random --scenario clean --timeout-cycles 84000000
+  baremetal-irq-abort: timeout=120s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation
+    /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/baremetal-irq-abort/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/baremetal/dma_irq_abort_test.memh
+  iommu-reference: timeout=60s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec/iommu_ref_model/test
+    /home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference
+  baremetal-error-drain: timeout=900s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt
+    /usr/bin/python3 /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/error_matrix.py --sim /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-drain/simv --memh /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/fw/dma_error_test.memh --result-dir /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T140241Z-10-f7b1de26/baremetal-error-drain/native
+  linux-baseline: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-fpga-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-fpga-investigation/build/sim-no-trace/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-fpga-investigation/out/fw_payload.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+  linux-axi-errors: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-error-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-error-investigation/build/sim-error/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-error-investigation/out/fw_payload.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+  linux-dmaengine: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/build/sim-irq/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-driver-investigation/out/fw_payload.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+  iommu-bound-control: timeout=60s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation
+    /home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/cva6-iommu/work-ver/Variane_testharness --max-cycles=100 /home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf
+  iommu-architecture: timeout=1200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/cva6-iommu/work-ver/Variane_testharness --max-cycles=20000000 --cycle-count /home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-tests/build/cva6/rv_iommu_test.elf
+  linux-mapping-direct: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/build/sim-mapping/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-direct.memh +MAX_CYCLES=250000000 +NO_DASM_TRACE
+  linux-mapping-swiotlb: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/build/sim-mapping/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-mapping-investigation/out/fw_payload-swiotlb.memh +MAX_CYCLES=250000000 +NO_DASM_TRACE
+  cache-legacy-bound: timeout=60s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-legacy/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-legacy.memh +MAX_CYCLES=100 +NO_DASM_TRACE
+  cache-legacy-negative: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-legacy/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-legacy.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+  cache-hpd-bound: timeout=60s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-hpd/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-hpd.memh +MAX_CYCLES=100 +NO_DASM_TRACE
+  cache-hpdcache: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/build/sim-hpd/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-cache-investigation/out/fw_payload-hpd.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+  cache-coherent-bound: timeout=60s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/build/sim-coherent/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh +MAX_CYCLES=100 +NO_DASM_TRACE
+  cache-coherent: timeout=7200s cwd=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation
+    /usr/bin/stdbuf -oL -eL /home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/build/sim-coherent/simv +MEMH=/home/karl/linux-work/dmadebug2/riscv-fpga-dma/linux-coherent-investigation/out/fw_payload-coherent.memh +MAX_CYCLES=200000000 +NO_DASM_TRACE
+Dry run passed; no output directory was created and no command was run.

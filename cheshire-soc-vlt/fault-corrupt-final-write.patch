@@ -1,0 +1,28 @@
+diff --git a/src/backend/idma_axi_write.sv b/src/backend/idma_axi_write.sv
+index ee27349..7146a18 100644
+--- a/src/backend/idma_axi_write.sv
++++ b/src/backend/idma_axi_write.sv
+@@ -193,6 +193,11 @@ module idma_axi_write #(
+                 end
+                 // assign the output
+                 write_req_o.w.data = buffer_data_masked;
++                // Test-only fault injection: corrupt one valid data bit on
++                // each final beat without changing the AXI byte strobes.
++                if (last_w && mask_out[0]) begin
++                    write_req_o.w.data[0] = ~buffer_data_masked[0];
++                end
+                 // assign the out mask to the strobe
+                 write_req_o.w.strb = mask_out;
+             end
+@@ -202,7 +207,10 @@ module idma_axi_write #(
+         // not used signal
+         assign buffer_data_masked = '0;
+         // simpler: direct connection
+-        assign write_req_o.w.data = buffer_out_i;
++        // Test-only fault injection: corrupt the same bit in direct-connect
++        // configurations while leaving all AXI control signals valid.
++        assign write_req_o.w.data = (last_w && mask_out[0] && !dp_poison_i) ?
++            (buffer_out_i ^ data_t'(1)) : buffer_out_i;
+         assign write_req_o.w.strb = dp_poison_i ? '0 : mask_out;
+     end
+ 

@@ -1,0 +1,35 @@
+{
+  "duration_seconds": 4.878864,
+  "finished_at": "2026-10-11T11:38:12.651678Z",
+  "gates": [
+    {
+      "actual": 1,
+      "allowed": [
+        1
+      ],
+      "gate": "exit_code",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "timeout after 100 cycles jobs=0/0"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+    }
+  ],
+  "interrupted": false,
+  "phase": "cache-hpd-bound",
+  "process_log": "process.log",
+  "returncode": 1,
+  "started_at": "2026-10-11T11:38:07.772144Z",
+  "status": "passed",
+  "timed_out": false
+}

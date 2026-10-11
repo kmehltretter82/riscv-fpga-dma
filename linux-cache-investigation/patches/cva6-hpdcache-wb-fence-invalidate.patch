@@ -1,0 +1,31 @@
+--- a/core/include/cv64a6_imafdchsclic_sv39_hpdcache_config_pkg.sv
++++ b/core/include/cv64a6_imafdchsclic_sv39_hpdcache_config_pkg.sv
+@@ -54,13 +54,16 @@
+   localparam CVA6ConfigDcacheSetAssoc = 8;
+   localparam CVA6ConfigDcacheLineWidth = 128;
+ 
+-  localparam CVA6ConfigDcacheFlushOnFence = 1'b0;
+-  localparam CVA6ConfigDcacheInvalidateOnFlush = 1'b0;
++  localparam CVA6ConfigDcacheFlushOnFence = 1'b1;
++  localparam CVA6ConfigDcacheInvalidateOnFlush = 1'b1;
+ 
+   localparam CVA6ConfigDcacheIdWidth = 3;
+   localparam CVA6ConfigMemTidWidth = CVA6ConfigAxiIdWidth;
+ 
+-  localparam CVA6ConfigWtDcacheWbufDepth = 8;
++  // The locked HPDcache splits the 4-bit memory-ID namespace into write-buffer
++  // IDs (0xxx), flush IDs (1xxx), and the all-ones uncached ID.  Eight flush
++  // entries would make entry 7 collide with that uncached ID, so reserve it.
++  localparam CVA6ConfigWtDcacheWbufDepth = 7;
+ 
+   localparam CVA6ConfigNrScoreboardEntries = 8;
+ 
+@@ -78,7 +81,7 @@
+ 
+   localparam CVA6ConfigPerfCounterEn = 1;
+ 
+-  localparam config_pkg::cache_type_t CVA6ConfigDcacheType = config_pkg::HPDCACHE;
++  localparam config_pkg::cache_type_t CVA6ConfigDcacheType = config_pkg::HPDCACHE_WB;
+ 
+   localparam CVA6ConfigMmuPresent = 1;
+ 

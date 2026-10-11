@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference"
+  ],
+  "argv_shell_quoted_for_display_only": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec/iommu_ref_model/test",
+  "description": "One complete run of the patched 30-test ratified-spec IOMMU C reference model.",
+  "environment_overrides": {},
+  "phase": "iommu-reference",
+  "started_at": "2026-10-11T11:12:39.124869Z",
+  "timeout_seconds": 60
+}

@@ -1,0 +1,12 @@
+sources/
+build/
+downloads/
+out/
+driver/*.o
+driver/*.ko
+driver/*.mod
+driver/*.mod.c
+driver/.*.cmd
+driver/Module.symvers
+driver/modules.order
+trace_hart_*.dasm

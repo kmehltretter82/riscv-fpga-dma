@@ -1,0 +1,55 @@
+DMA API debug boot-cost PC diagnosis
+Date: 2026-10-11 UTC
+
+Old default-table baseline
+--------------------------
+Payload: dma_debug_entries default (65,536)
+Bound: 200,000,000 RTL cycles
+Log: linux-fpga-investigation/out/verilator-linux-smoke-no-trace.log
+vmlinux SHA-256:
+  5dd69a2c1a0a410f2cd645e858af47f2fca6d65c54cd8689f86c78be2a1ce432
+
+The final repeated PC at cycles 195,000,000 through 197,000,000 was
+0xffffffff800b2b64.  Resolving it against the exact vmlinux gives:
+
+  get_page_from_freelist
+  page_alloc.c:?
+
+The kernel had submitted no DMA job when the exact cycle bound fired.
+
+DT-only AXI-error and DMAengine retries (ineffective)
+-----------------------------------------------------
+Intended payload: dma_debug_entries=1024, CONFIG_DMA_API_DEBUG=y
+Actual payload: forced compiled command line omitted dma_debug_entries
+Logs:
+  regression/runs/20261011T124515Z-2/linux-axi-errors/process.log
+  regression/runs/20261011T124511Z-2/linux-dmaengine/process.log
+vmlinux SHA-256 values:
+  3cf7392f1ec47a4cfa39fbfeb76dd45b224c6ca51ee027f73452e329ca16919d
+  886befef8987babbd9375df33bd62a5ca544393d72732b7afd756c928d7bc69d
+
+Both exact images place dma_debug_init at 0xffffffff8005ad0c.  At cycles
+88,000,000 through 91,000,000 their committed PCs repeatedly included
+0xffffffff8005ad2e and 0xffffffff8005ad30.  Resolving either address gives:
+
+  dma_debug_init
+  debug.c:?
+
+At cycles 92,000,000 and 93,000,000 the heartbeat sampled exception-return
+code, while a cycle-94,000,000 sample was again in page allocation.  Those
+sparse samples prove entry into the named DMA-debug initialization code, but
+do not prove the initcall finished.  More importantly, their continuing
+allocator trace led to inspection of the exact kernel configurations.  Both
+contain CONFIG_CMDLINE_FORCE=y and a compiled command line without
+dma_debug_entries=1024, so Linux ignored the option present only in the DT.
+The runs were stopped and checksum-sealed as interrupted diagnostics.  They
+are not optimized acceptance evidence.  The corrected build recipes put the
+option in CONFIG_CMDLINE and assert that exact value after olddefconfig.
+
+The option does not disable DMA API debugging: CONFIG_DMA_API_DEBUG, the
+DMA-debug error counter, and the final test gates remain mandatory.
+
+Commands used
+-------------
+  riscv64-linux-gnu-nm -n VMLINUX | rg ' dma_debug_init$| get_page_from_freelist$'
+  riscv64-linux-gnu-addr2line -f -e VMLINUX ADDRESS

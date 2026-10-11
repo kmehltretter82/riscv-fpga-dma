@@ -1,0 +1,161 @@
+diff --git a/src/backend/idma_error_handler.sv b/src/backend/idma_error_handler.sv
+index d2bd12a..364939b 100644
+--- a/src/backend/idma_error_handler.sv
++++ b/src/backend/idma_error_handler.sv
+@@ -129,6 +129,9 @@ module idma_error_handler #(
+     // Number of outstanding 1D transfers in the datapath
+     num_outst_t num_outst_d, num_outst_q;
+ 
++    // Preserve the controlling unit's last flag while an errored transfer drains.
++    logic rsp_last_d, rsp_last_q;
++
+ 
+     //--------------------------------------
+     // Burst Address FIFOs
+@@ -219,6 +222,7 @@ module idma_error_handler #(
+         legalizer_kill_o   = 1'b0;
+         // keep state
+         state_d            = state_q;
++        rsp_last_d         = rsp_last_q;
+ 
+         // FSM
+         case (state_q)
+@@ -300,7 +304,7 @@ module idma_error_handler #(
+                         // the counter is 0 -> no transfer in the datapath. This is an impossible
+                         // state
+                         end else begin
+-                            `ASSERT_NEVER(inactive_tf_wait, 1'b1, clk_i, !rst_ni)
++                            assert (1'b0) else $error("inactive transfer in WAIT");
+                         end
+                     end
+                 end
+@@ -333,13 +337,14 @@ module idma_error_handler #(
+                     // the counter is 0 -> no transfer in the datapath. This is an impossible
+                     // state
+                     end else begin
+-                        `ASSERT_NEVER(inactive_tf_wait_last_w, 1'b1, clk_i, !rst_ni)
++                        assert (1'b0) else $error("inactive transfer in WAIT_LAST_W");
+                     end
+                 end
+             end
+ 
+             // emit an extra response and return to idle state
+             EMIT_EXTRA_RSP : begin
++                rsp_o.last  = rsp_last_q;
+                 rsp_valid_o = 1'b1;
+                 if (rsp_ready_i) begin
+                     state_d = IDLE;
+@@ -365,6 +370,13 @@ module idma_error_handler #(
+             // default
+             default :;
+         endcase
++
++        // The metadata FIFO head changes while LEG_FLUSH drains outstanding
++        // responses. Capture the error response's flag at its handshake so the
++        // terminal response remains associated with the same transfer.
++        if (rsp_valid_o & rsp_ready_i & rsp_o.error) begin
++            rsp_last_d = rsp_o.last;
++        end
+     end
+ 
+ 
+@@ -380,5 +392,6 @@ module idma_error_handler #(
+     //--------------------------------------
+     `FF(state_q,         state_d, IDLE, clk_i, rst_ni)
+     `FF(num_outst_q, num_outst_d,   '0, clk_i, rst_ni)
++    `FF(rsp_last_q,   rsp_last_d,   1'b0, clk_i, rst_ni)
+ 
+ endmodule
+diff --git a/src/backend/tpl/idma_backend.sv.tpl b/src/backend/tpl/idma_backend.sv.tpl
+index 97d389b..8b6fed4 100644
+--- a/src/backend/tpl/idma_backend.sv.tpl
++++ b/src/backend/tpl/idma_backend.sv.tpl
+@@ -323,6 +323,7 @@ _rsp_t ${protocol}_write_rsp_i,
+     // It the current transfer the last burst in the 1D transfer?
+     logic w_last_burst;
+     logic w_last_ready;
++    logic w_last_valid;
+ 
+     // Super last flag: The current transfer is indicated as the last one by the controlling
+     // unit; e.g. by a midend
+@@ -584,7 +585,8 @@ _rsp_t ${protocol}_write_rsp_i,
+     //--------------------------------------
+     assign dp_busy = busy_o.buffer_busy |
+                      busy_o.r_dp_busy   |
+-                     busy_o.w_dp_busy;
++                     busy_o.w_dp_busy   |
++                     w_last_valid;
+ 
+ 
+     //--------------------------------------
+@@ -680,7 +682,7 @@ _rsp_t ${protocol}_write_rsp_i,
+         .valid_i    ( w_valid & w_ready               ),
+         .ready_o    ( w_last_ready                    ),
+         .data_o     ( {w_super_last, w_last_burst}    ),
+-        .valid_o    ( /* NOT CONNECTED */             ),
++        .valid_o    ( w_last_valid                     ),
+         .ready_i    ( w_dp_rsp_valid & w_dp_rsp_ready )
+     );
+ 
+diff --git a/target/rtl/idma_backend_rw_axi.sv b/target/rtl/idma_backend_rw_axi.sv
+index dacaef2..bc78dd5 100644
+--- a/target/rtl/idma_backend_rw_axi.sv
++++ b/target/rtl/idma_backend_rw_axi.sv
+@@ -244,6 +244,7 @@ module idma_backend_rw_axi #(
+     // It the current transfer the last burst in the 1D transfer?
+     logic w_last_burst;
+     logic w_last_ready;
++    logic w_last_valid;
+ 
+     // Super last flag: The current transfer is indicated as the last one by the controlling
+     // unit; e.g. by a midend
+@@ -489,7 +490,8 @@ module idma_backend_rw_axi #(
+     //--------------------------------------
+     assign dp_busy = busy_o.buffer_busy |
+                      busy_o.r_dp_busy   |
+-                     busy_o.w_dp_busy;
++                     busy_o.w_dp_busy   |
++                     w_last_valid;
+ 
+ 
+     //--------------------------------------
+@@ -567,7 +569,7 @@ module idma_backend_rw_axi #(
+         .valid_i    ( w_valid & w_ready               ),
+         .ready_o    ( w_last_ready                    ),
+         .data_o     ( {w_super_last, w_last_burst}    ),
+-        .valid_o    ( /* NOT CONNECTED */             ),
++        .valid_o    ( w_last_valid                     ),
+         .ready_i    ( w_dp_rsp_valid & w_dp_rsp_ready )
+     );
+ 
+diff --git a/target/rtl/idma_generated.sv b/target/rtl/idma_generated.sv
+index c5b9266..25c2d78 100644
+--- a/target/rtl/idma_generated.sv
++++ b/target/rtl/idma_generated.sv
+@@ -5381,6 +5381,7 @@ module idma_backend_rw_axi #(
+     // It the current transfer the last burst in the 1D transfer?
+     logic w_last_burst;
+     logic w_last_ready;
++    logic w_last_valid;
+ 
+     // Super last flag: The current transfer is indicated as the last one by the controlling
+     // unit; e.g. by a midend
+@@ -5626,7 +5627,8 @@ module idma_backend_rw_axi #(
+     //--------------------------------------
+     assign dp_busy = busy_o.buffer_busy |
+                      busy_o.r_dp_busy   |
+-                     busy_o.w_dp_busy;
++                     busy_o.w_dp_busy   |
++                     w_last_valid;
+ 
+ 
+     //--------------------------------------
+@@ -5704,7 +5706,7 @@ module idma_backend_rw_axi #(
+         .valid_i    ( w_valid & w_ready               ),
+         .ready_o    ( w_last_ready                    ),
+         .data_o     ( {w_super_last, w_last_burst}    ),
+-        .valid_o    ( /* NOT CONNECTED */             ),
++        .valid_o    ( w_last_valid                     ),
+         .ready_i    ( w_dp_rsp_valid & w_dp_rsp_ready )
+     );
+ 

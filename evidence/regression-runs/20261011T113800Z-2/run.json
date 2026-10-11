@@ -1,0 +1,86 @@
+{
+  "finished_at": "2026-10-11T11:38:12.652640Z",
+  "interrupted": false,
+  "manifest": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/manifest.json",
+  "manifest_sha256": "d73d2dd1a9fbb935ef7f2256ada8ed6f69bc24aad0ddab7546148c2906556e9f",
+  "results": [
+    {
+      "duration_seconds": 4.829471,
+      "finished_at": "2026-10-11T11:38:07.064460Z",
+      "gates": [
+        {
+          "actual": 1,
+          "allowed": [
+            1
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "timeout after 100 cycles jobs=0/0"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+        }
+      ],
+      "interrupted": false,
+      "phase": "cache-legacy-bound",
+      "process_log": "process.log",
+      "returncode": 1,
+      "started_at": "2026-10-11T11:38:02.234295Z",
+      "status": "passed",
+      "timed_out": false
+    },
+    {
+      "duration_seconds": 4.878864,
+      "finished_at": "2026-10-11T11:38:12.651678Z",
+      "gates": [
+        {
+          "actual": 1,
+          "allowed": [
+            1
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "timeout after 100 cycles jobs=0/0"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+        }
+      ],
+      "interrupted": false,
+      "phase": "cache-hpd-bound",
+      "process_log": "process.log",
+      "returncode": 1,
+      "started_at": "2026-10-11T11:38:07.772144Z",
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "run_id": "20261011T113800Z-2",
+  "schema_version": 1,
+  "selected": [
+    "cache-legacy-bound",
+    "cache-hpd-bound"
+  ],
+  "started_at": "2026-10-11T11:38:01.544669Z",
+  "status": "passed"
+}

@@ -1,0 +1,78 @@
+diff --git a/core/cva6.sv b/core/cva6.sv
+index 1bf0de585..82171a89f 100644
+--- a/core/cva6.sv
++++ b/core/cva6.sv
+@@ -1840,11 +1840,15 @@ module cva6
+ 
+   int f;
+   logic [63:0] cycles;
++  bit dasm_trace_enable;
+ 
+   initial begin
+     string fn;
+-    $sformat(fn, "trace_hart_%0.0f.dasm", hart_id_i);
+-    f = $fopen(fn, "w");
++    dasm_trace_enable = !$test$plusargs("NO_DASM_TRACE");
++    if (dasm_trace_enable) begin
++      $sformat(fn, "trace_hart_%0.0f.dasm", hart_id_i);
++      f = $fopen(fn, "w");
++    end
+   end
+ 
+   always_ff @(posedge clk_i or negedge rst_ni) begin
+@@ -1861,23 +1865,29 @@ module cva6
+           default: ;  // Do nothing
+         endcase
+       end
+-      for (int i = 0; i < CVA6Cfg.NrCommitPorts; i++) begin
+-        if (commit_ack[i] && !commit_instr_id_commit[i].ex.valid) begin
+-          $fwrite(f, "%d 0x%0h %s (0x%h) DASM(%h)\n", cycles, commit_instr_id_commit[i].pc, mode,
+-                  commit_instr_id_commit[i].ex.tval[31:0], commit_instr_id_commit[i].ex.tval[31:0]);
+-        end else if (commit_ack[i] && commit_instr_id_commit[i].ex.valid) begin
+-          if (commit_instr_id_commit[i].ex.cause == 2) begin
+-            $fwrite(f, "Exception Cause: Illegal Instructions, DASM(%h) PC=%h\n",
+-                    commit_instr_id_commit[i].ex.tval[31:0], commit_instr_id_commit[i].pc);
+-          end else begin
+-            if (CVA6Cfg.DebugEn && debug_mode) begin
+-              $fwrite(f, "%d 0x%0h %s (0x%h) DASM(%h)\n", cycles, commit_instr_id_commit[i].pc,
+-                      mode, commit_instr_id_commit[i].ex.tval[31:0],
+-                      commit_instr_id_commit[i].ex.tval[31:0]);
++      if (dasm_trace_enable) begin
++        for (int i = 0; i < CVA6Cfg.NrCommitPorts; i++) begin
++          if (commit_ack[i] && !commit_instr_id_commit[i].ex.valid) begin
++            $fwrite(f, "%d 0x%0h %s (0x%h) DASM(%h)\n", cycles,
++                    commit_instr_id_commit[i].pc, mode,
++                    commit_instr_id_commit[i].ex.tval[31:0],
++                    commit_instr_id_commit[i].ex.tval[31:0]);
++          end else if (commit_ack[i] && commit_instr_id_commit[i].ex.valid) begin
++            if (commit_instr_id_commit[i].ex.cause == 2) begin
++              $fwrite(f, "Exception Cause: Illegal Instructions, DASM(%h) PC=%h\n",
++                      commit_instr_id_commit[i].ex.tval[31:0], commit_instr_id_commit[i].pc);
+             end else begin
+-              $fwrite(f, "Exception Cause: %5d, DASM(%h) PC=%h\n",
+-                      commit_instr_id_commit[i].ex.cause, commit_instr_id_commit[i].ex.tval[31:0],
+-                      commit_instr_id_commit[i].pc);
++              if (CVA6Cfg.DebugEn && debug_mode) begin
++                $fwrite(f, "%d 0x%0h %s (0x%h) DASM(%h)\n", cycles,
++                        commit_instr_id_commit[i].pc, mode,
++                        commit_instr_id_commit[i].ex.tval[31:0],
++                        commit_instr_id_commit[i].ex.tval[31:0]);
++              end else begin
++                $fwrite(f, "Exception Cause: %5d, DASM(%h) PC=%h\n",
++                        commit_instr_id_commit[i].ex.cause,
++                        commit_instr_id_commit[i].ex.tval[31:0],
++                        commit_instr_id_commit[i].pc);
++              end
+             end
+           end
+         end
+@@ -1887,7 +1897,8 @@ module cva6
+   end
+ 
+   final begin
+-    $fclose(f);
++    if (dasm_trace_enable)
++      $fclose(f);
+   end
+ `endif  // VERILATOR
+   //pragma translate_on

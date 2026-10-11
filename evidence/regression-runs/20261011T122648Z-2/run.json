@@ -1,0 +1,50 @@
+{
+  "finished_at": "2026-10-11T12:26:54.771882Z",
+  "interrupted": false,
+  "manifest": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/manifest.json",
+  "manifest_sha256": "1a9464b1174b55e97c3cb20216987797ca41469a8265d19b8d6f37af2c24cde8",
+  "results": [
+    {
+      "duration_seconds": 4.880632,
+      "finished_at": "2026-10-11T12:26:54.770943Z",
+      "gates": [
+        {
+          "actual": 1,
+          "allowed": [
+            1
+          ],
+          "gate": "exit_code",
+          "passed": true,
+          "timed_out": false
+        },
+        {
+          "actual": 1,
+          "expected_exact": 1,
+          "gate": "required_regex",
+          "passed": true,
+          "pattern": "timeout after 100 cycles jobs=0/0"
+        },
+        {
+          "actual": 0,
+          "gate": "forbidden_regex",
+          "passed": true,
+          "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+        }
+      ],
+      "interrupted": false,
+      "phase": "cache-coherent-bound",
+      "process_log": "process.log",
+      "returncode": 1,
+      "started_at": "2026-10-11T12:26:49.889650Z",
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "run_id": "20261011T122648Z-2",
+  "schema_version": 1,
+  "selected": [
+    "cache-coherent-bound"
+  ],
+  "started_at": "2026-10-11T12:26:49.119137Z",
+  "status": "passed"
+}

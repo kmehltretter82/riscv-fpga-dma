@@ -1,0 +1,13 @@
+PASS stall0-read-burst0
+PASS stall0-read-burst1
+PASS stall0-read-burst2
+PASS stall0-write-burst0
+PASS stall0-write-burst1
+PASS stall0-write-burst2
+PASS stall1-read-burst0
+PASS stall1-read-burst1
+PASS stall1-read-burst2
+PASS stall1-write-burst0
+PASS stall1-write-burst1
+PASS stall1-write-burst2
+PASS: 12/12 read/write burst-position and latency cases

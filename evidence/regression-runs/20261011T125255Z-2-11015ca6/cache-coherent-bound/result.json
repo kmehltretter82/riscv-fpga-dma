@@ -1,0 +1,37 @@
+{
+  "adopted_at": "2026-10-11T12:52:57.241428Z",
+  "duration_seconds": null,
+  "finished_at": null,
+  "gates": [
+    {
+      "actual": 1,
+      "allowed": [
+        1
+      ],
+      "gate": "exit_code",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "actual": 1,
+      "expected_exact": 1,
+      "gate": "required_regex",
+      "passed": true,
+      "pattern": "timeout after 100 cycles jobs=0/0"
+    },
+    {
+      "actual": 0,
+      "gate": "forbidden_regex",
+      "passed": true,
+      "pattern": "FPGA-LINUX-DMA-CACHE-PASS"
+    }
+  ],
+  "interrupted": false,
+  "phase": "cache-coherent-bound",
+  "process_log": "process.log",
+  "provenance": "completed direct run; preflight captured at adoption",
+  "returncode": 1,
+  "started_at": null,
+  "status": "passed",
+  "timed_out": false
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/error_matrix.py",
+    "--sim",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-drain/simv",
+    "--memh",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/fw/dma_error_test.memh",
+    "--result-dir",
+    "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T114005Z-2/baremetal-error-drain/native"
+  ],
+  "argv_shell_quoted_for_display_only": "/usr/bin/python3 /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/adapters/error_matrix.py --sim /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/build-autoabort-drain/simv --memh /home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt/fw/dma_error_test.memh --result-dir /home/karl/linux-work/dmadebug2/riscv-fpga-dma/regression/runs/20261011T114005Z-2/baremetal-error-drain/native",
+  "cwd": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/cheshire-error-vlt",
+  "description": "Twelve focused iDMA read/write SLVERR burst-position and latency-drain cases.",
+  "environment_overrides": {},
+  "phase": "baremetal-error-drain",
+  "started_at": "2026-10-11T11:40:05.909728Z",
+  "timeout_seconds": 900
+}

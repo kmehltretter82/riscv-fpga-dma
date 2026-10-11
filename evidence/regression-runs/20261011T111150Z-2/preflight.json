@@ -1,0 +1,43 @@
+{
+  "captured_at": "2026-10-11T11:11:50.314408Z",
+  "phases": [
+    {
+      "phase": "iommu-reference",
+      "prerequisites": [
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791716998907271536,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/build/iommu-reference",
+          "sha256": "6ba70e96a93d526e822da0afb1cabee7e9da6cdca7d5120d2ccaae9243ed8411",
+          "size": 595992
+        },
+        {
+          "available": true,
+          "kind": "file",
+          "mtime_ns": 1791712310196248372,
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/patches/iommu-ref-model-test-ub.patch",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/iommu-investigation/patches/iommu-ref-model-test-ub.patch",
+          "sha256": "5edc0bb38c88268bf2954053272ab30c6ab72e08ef3162d738e31aa60a8abb9a",
+          "size": 5046
+        }
+      ],
+      "revisions": [
+        {
+          "dirty": true,
+          "head": "875e15459ef7ac99dfd313b2a8c0a19dba742e59",
+          "path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec",
+          "resolved_path": "/home/karl/linux-work/dmadebug2/riscv-fpga-dma/sources/riscv-iommu-spec",
+          "tracked_diff_sha256": "5edc0bb38c88268bf2954053272ab30c6ab72e08ef3162d738e31aa60a8abb9a",
+          "tracked_status": [
+            " M iommu_ref_model/test/test_app.c"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected": [
+    "iommu-reference"
+  ]
+}

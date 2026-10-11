@@ -1,0 +1,12 @@
+78a7462f8395b702ee938b5c325dcbea1428be2257382a440d36a579c9ad329f  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/cheshire-error.patch
+cc18a55cf867b829056291f1c0573a2c3df8a5b6f48bcd171688e54fd0456912  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/cheshire-irq-abort.patch
+abd95c397b5e8838b12d58cc00f9317e79459205af7acd86486e33817ccd4cbe  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/cva6-iommu.patch
+86ba593b033e78e65c7483bce66311ed9d51a145c429c3880312129b42a26eca  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/cva6-no-trace.patch
+74750f9764cf144f0571e23f06699ff366031f391d05233f6e7aec3feb761fea  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/idma-abort.patch
+f68303e65819a0b2d6b30ce883981325e18079e31a6d42c0b6b7a8680b5270aa  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/idma-coupler.patch
+68f4ac64a7a98bf5fb205d4f1bf0f3c9ded04e9e7d6853b573a6cff3fd8ab392  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/idma-error.patch
+e95be8bdb907a64f7243971581e38dbbc19dfaa642a8c82c3cda30ba816281ac  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/linux-cheshire-cache.patch
+f636249ffedaf7b835a8331591c6007b5c574da6143f391836ddd4c0cc4abd35  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/opensbi-cheshire.patch
+5edc0bb38c88268bf2954053272ab30c6ab72e08ef3162d738e31aa60a8abb9a  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/riscv-iommu-reference.patch
+4cc4b23435fa42e460b327b342da4c8b661962cab96c69cbb3ef49ef7d278d87  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/riscv-iommu-tests.patch
+3ee7997db8b8037468e12910ba3fe32e8d339739ec33f40fca7b331958595d6d  /home/karl/linux-work/dmadebug2/riscv-fpga-dma-release/upstream-patches/riscv-isa-sim-fesvr.patch

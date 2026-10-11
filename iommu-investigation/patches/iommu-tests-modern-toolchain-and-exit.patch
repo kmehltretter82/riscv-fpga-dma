@@ -1,0 +1,144 @@
+diff --git a/Makefile b/Makefile
+index d9ca736..7aee603 100644
+--- a/Makefile
++++ b/Makefile
+@@ -56,7 +56,9 @@ ld_file_final:=$(build_dir)/$(ld_file)
+ deps:=$(patsubst  %.o, %.d, $(objs)) $(ld_file_final).d
+ dirs:=$(sort $(dir $(objs) $(deps)))
+ 
+-GENERIC_FLAGS += -march=rv64imac -mabi=lp64 -g3 -mcmodel=medany -O3 $(inc_dirs)
++# Binutils 2.38 and newer require the formerly implicit CSR and instruction
++# fence extensions to be named explicitly in -march.
++GENERIC_FLAGS += -march=rv64imac_zicsr_zifencei -mabi=lp64 -g3 -mcmodel=medany -O3 $(inc_dirs)
+ ASFLAGS = $(GENERIC_FLAGS)
+ CFLAGS = $(GENERIC_FLAGS)
+ LDFLAGS = -ffreestanding -nostartfiles -static $(GENERIC_FLAGS)
+diff --git a/linker.ld b/linker.ld
+index 3f79f8e..4c5539d 100644
+--- a/linker.ld
++++ b/linker.ld
+@@ -29,7 +29,7 @@ SECTIONS {
+ 
+     .test_table :  {
+         _test_table = .;
+-		*(.test_table)
++		KEEP(*(.test_table))
+         _test_table_end = .;
+ 	}
+     _test_table_size = (_test_table_end - _test_table) / 8;
+diff --git a/platform/cva6/retarget_qemu.c b/platform/cva6/retarget_qemu.c
+index 30c80bf..42a51dd 100644
+--- a/platform/cva6/retarget_qemu.c
++++ b/platform/cva6/retarget_qemu.c
+@@ -4,6 +4,27 @@
+ #include <sys/errno.h>
+ #include "8250_uart.h"
+ uart8250_t * uart = (uart8250_t *) (0x10000000) ;
++
++/*
++ * Picolibc's tinystdio deliberately leaves the standard streams to the
++ * board support package.  The original project used newlib's _write hook;
++ * provide the equivalent stream object so the same test binary can be built
++ * with Ubuntu's relocatable bare-metal toolchain.
++ */
++static int uart_stdio_put(char c, FILE *stream)
++{
++    (void)stream;
++    if (c == '\n')
++        uart_putc(uart, '\r');
++    uart_putc(uart, c);
++    return (unsigned char)c;
++}
++
++static FILE uart_stdout = FDEV_SETUP_STREAM(uart_stdio_put, NULL, NULL,
++                                             _FDEV_SETUP_WRITE);
++FILE *const stdout = &uart_stdout;
++FILE *const stderr = &uart_stdout;
++FILE *const stdin = NULL;
+ // void* memset(void* dest, int byte, size_t len)
+ // {
+ //   if ((((uintptr_t)dest | len) & (sizeof(uintptr_t)-1)) == 0) {
+@@ -101,6 +122,11 @@ void* _sbrk(int increment)
+ 
+ void _exit(int return_value)
+ {
++    extern volatile uint64_t tohost;
++    uint64_t code = return_value < 0 ? 1 : (uint32_t)return_value;
++
++    asm ("fence rw, rw" ::: "memory");
++    tohost = (code << 1) | 1;
+     asm ("fence rw, rw" ::: "memory");
+     while (1)
+     {
+@@ -121,4 +147,4 @@ int _kill(int pid, int sig)
+ 
+ void _init(){
+     uart_init(uart);
+-}
+\ No newline at end of file
++}
+diff --git a/src/inc/rvh_test.h b/src/inc/rvh_test.h
+index f1d9afd..8a7836b 100644
+--- a/src/inc/rvh_test.h
++++ b/src/inc/rvh_test.h
+@@ -50,7 +50,7 @@
+ # define ERROR(str...)	{\
+     printf(CRED "ERROR: " CDFLT str );\
+     printf(" (%s, %d)\n", __func__, __LINE__);\
+-    exit(0);\
++    exit(1);\
+     while(1);\
+ }
+ #else
+@@ -140,19 +140,20 @@ extern size_t test_table_size;
+     static test_func_t test ## func __attribute__((section(".test_table"), used)) = test;
+ 
+ #define TEST_ASSERT(test, cond, ...) {\
++    bool __assert_passed = !!(cond);\
++    num_total_tests++;\
++    if (__assert_passed) {num_succ_tests++;};\
+     if(LOG_LEVEL >= LOG_DETAIL){\
+         size_t line_size = 60;\
+         size_t size = strlen(test);\
+         printf(CBLU "\t%-70.*s" CDFLT, line_size, test);\
+         for(int i = line_size; i < size; i+=line_size)\
+             printf(CBLU "\n\t%-70.*s" CDFLT, line_size, &test[i]);\
+-        num_total_tests++;\
+-        if(cond) {num_succ_tests++;};\
+-        printf("%s" CDFLT, (cond) ? CGRN "PASSED" : CRED "FAILED");\
+-        if(!(cond)) { printf("\n\t("); printf(""__VA_ARGS__); printf(")"); }\
++        printf("%s" CDFLT, __assert_passed ? CGRN "PASSED" : CRED "FAILED");\
++        if(!__assert_passed) { printf("\n\t("); printf(""__VA_ARGS__); printf(")"); }\
+         printf("\n");\
+     }\
+-    test_status = test_status && cond;\
++    test_status = test_status && __assert_passed;\
+     /*if(!test_status) goto failed; /**/\
+ }
+ 
+@@ -250,7 +251,7 @@ failed:\
+         printf(CRED "Summary: failed %d of %d\n", num_total_tests-num_succ_tests, num_total_tests); \
+     } \
+     printf(CBLU "You can close the test!\n"); \
+-    exit(0);\
++    exit((num_succ_tests == num_total_tests) ? 0 : 1);\
+ }
+ 
+ static inline uint64_t read64(uintptr_t addr){
+diff --git a/src/test_register.c b/src/test_register.c
+index 776b652..8825c9f 100644
+--- a/src/test_register.c
++++ b/src/test_register.c
+@@ -9,8 +9,10 @@
+ // TEST_REGISTER(latency_test);
+ 
+ // IOMMU Arch tests
+-TEST_REGISTER(dbg_interface);
+-TEST_REGISTER(mrif_support);
++// The locked RTL advertises capabilities.dbg=0 and has no debug interface.
++// TEST_REGISTER(dbg_interface);
++// The locked RTL implements write-through MSI translation only (no MRIF).
++// TEST_REGISTER(mrif_support);
+ TEST_REGISTER(hpm);
+ TEST_REGISTER(msi_generation);
+ TEST_REGISTER(iofence);
